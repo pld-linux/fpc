@@ -1,5 +1,7 @@
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
+Summary(ru_RU.KOI8-R):	Свободный компилятор Pascal
+Summary(uk_UA.KOI8-U):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	1.0.4
 Release:	3
@@ -31,6 +33,16 @@ Free Pascal to 32 bitowy kompilator dla procesorСw i386 oraz m86k.
 Free Pascal zostaЁ zaprojektowany by byФ (jak tylko to mo©liwe)
 kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal rСwnie©
 rozszerza te jЙzyki elementami takimi jak przeЁadowywanie funkcji.
+
+%description -l ru_RU.KOI8-R
+FPC -- 32-битный компилятор Pascal, совместимый с Turbo Pascal 7.0 и Delphi.
+Поставляется с RTL (библиотекой времени исполнения), FCL (библиотекой свободных
+компонент), интерфейсами к gtk, ncurses, zlib, mysql, postgres, ibase.
+
+%description -l uk_UA.KOI8-U
+FPC -- 32-б╕тний комп╕лятор Pascal, сум╕сний ╕з Turbo Pascal 7.0 та Delphi.
+Постача╓ться ╕з RTL (б╕бл╕отекою часу виконання), FCL (б╕бл╕отекою в╕льних
+компонент), ╕нтерфейсами до gtk, ncurses, zlib, mysql, postgres, ibase.
 
 %package examples
 Summary:	Free Pascal Compiler exaple programs
