@@ -63,7 +63,7 @@ if [ "%{_target_cpu}" = "m68k" ]; then
 else
 	CPU=I386
 fi
-make \
+%{__make} \
 	OPT="$RPM_OPT_FLAGS" \
 	RELEASE=1 \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
