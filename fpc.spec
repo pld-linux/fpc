@@ -13,6 +13,7 @@ Patch1:		%{name}-glibc.patch
 URL:		http://www.freepascal.org/
 Requires:	gcc >= 2.95.2
 BuildRequires:	bin86
+BuildRequires:	zlib-devel
 ExclusiveArch:	%{ix86} m68k
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
