@@ -14,17 +14,18 @@ ExclusiveArch:	%{ix86} m68k
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-Free Pascal is a 32-bit compiler for the i386 and m68k processors. Free
-Pascal is designed to be, as much as possible, source compatible with Turbo
-Pascal 7.0 and Delphi 4 (although this goal is not yet attained), but it
-also enhances these languages with elements like function overloading. And,
-unlike these ancestors, it supports multiple platforms.
+Free Pascal is a 32-bit compiler for the i386 and m68k processors.
+Free Pascal is designed to be, as much as possible, source compatible
+with Turbo Pascal 7.0 and Delphi 4 (although this goal is not yet
+attained), but it also enhances these languages with elements like
+function overloading. And, unlike these ancestors, it supports
+multiple platforms.
 
 %description -l pl
-Free Pascal to 32 bitowy kompilator dla procesorów i386 oraz m86k. Free
-Pascal zosta³ zaprojektowany by byæ (jak tylko to mo¿liwe) kompatybilnym z
-Turbo Pascal 7.0 oraz Delphi 4. Free Pascal równie¿ rozszerza te jêzyki
-elementami takimi jak prze³adowywanie funkcji.
+Free Pascal to 32 bitowy kompilator dla procesorów i386 oraz m86k.
+Free Pascal zosta³ zaprojektowany by byæ (jak tylko to mo¿liwe)
+kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal równie¿
+rozszerza te jêzyki elementami takimi jak prze³adowywanie funkcji.
 
 %package doc
 Summary:	Free Pascal Compiler documentation
