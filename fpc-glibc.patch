@@ -1,0 +1,17 @@
+--- utils/Makefile~	Fri Dec 15 21:26:43 2000
++++ utils/Makefile	Wed Dec 12 21:16:28 2001
+@@ -1037,6 +1037,14 @@
+ 	$(COMPILER) $< $(REDIR)
+ 	$(EXECPPAS)
+ 
++# Workaround for newer versions of glibc. For a reason unknown to me
++# symbols __libc_init and __setfpucw are available only in the static
++# version of libc.
++bin2obj$(EXEEXT): bin2obj.pp
++	$(COMPILER) $< -s $(REDIR)
++	echo 'INPUT(/usr/lib/libc.a)' >>link.res
++	./ppas.sh
++
+ #####################################################################
+ # Library
+ #####################################################################

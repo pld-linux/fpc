@@ -2,7 +2,7 @@ Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
 Name:		fpc
 Version:	1.0.4
-Release:	1
+Release:	2
 License:	GPL
 Group:		Development/Languages
 Group(de):	Entwicklung/Sprachen
@@ -11,6 +11,7 @@ Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/Linux/%{name}-%{version}.ELF.tar
 Source1:	%{name}-sample.cfg
 Patch0:		%{name}-poptasm.patch
+Patch1:		%{name}-glibc.patch
 URL:		http://www.freepascal.org/
 Requires:	gcc >= 2.95.2
 BuildRequires:	bin86
@@ -76,6 +77,7 @@ mkdir -p src/%{name}-%{version}/man && echo ".PHONY:	all install installman" > s
 
 cd src/%{name}-%{version}
 %patch0 -p0
+%patch1 -p0
 
 %build
 if [ "%{_build_cpu}" = "m68k" ]; then
