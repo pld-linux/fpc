@@ -181,7 +181,7 @@ rm -f %{_sysconfdir}/ppc386.cfg.new
 
 %files examples
 %defattr(644,root,root,755)
-%doc %{_examplesdir}/fpc
+%{_examplesdir}/fpc
 
 %files doc
 %defattr(644,root,root,755)
