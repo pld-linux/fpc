@@ -1,3 +1,6 @@
+# TODO:
+# - use dynamic linking
+# - allow $PATH exceeding 255 chars
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorÛw i386 i m68k
 Summary(ru):	Û◊œ¬œƒŒŸ  ÀœÕ–…Ã—‘œ“ Pascal
@@ -14,10 +17,10 @@ Source1:	ftp://ftp.us.freepascal.org/pub/fpc/dist/Linux/i386/separate/binary.tar
 # Source1-md5:	62c7ac6c21c44276b5e14bf34265d185
 Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
-Requires:	gcc >= 2.95.2
 BuildRequires:	bin86
 BuildRequires:	glibc-static
 BuildRequires:	zlib-devel
+Requires:	gcc >= 2.95.2
 ExclusiveArch:	%{ix86} m68k
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -33,7 +36,7 @@ multiple platforms.
 Free Pascal to 32 bitowy kompilator dla procesorÛw i386 oraz m86k.
 Free Pascal zosta≥ zaprojektowany by byÊ (jak tylko to moøliwe)
 kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal rÛwnieø
-rozszerza te jÍzyki elementami takimi jak prze≥adowywanie funkcji.
+rozszerza te jÍzyki elementami takimi jak przeci±øanie funkcji.
 
 %description -l ru
 FPC -- 32-¬…‘ŒŸ  ÀœÕ–…Ã—‘œ“ Pascal, ”œ◊Õ≈”‘…ÕŸ  ” Turbo Pascal 7.0 … Delphi.
@@ -105,9 +108,11 @@ PP=`pwd`/lib/fpc/%{version}/ppc386
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
 
-# -O- optimalization to workaround bug in PP compiler in 1.0.4
+# ppc386 binary cuts PATH - sometimes before /usr/bin with needed as and ld
+export PATH="/usr/bin:/bin"
+
 %{__make} -C src/%{name}-%{version} \
-	OPT="-O- -Xs -n" \
+	OPT="$OPTF -Xs -n" \
 	RELEASE="" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
@@ -126,15 +131,14 @@ NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
 
 # %{__make} -C src/%{name}-%{version}/docs pdf FPDOC=${NEWFPDOC}
 
-
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
 
 install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/fpc.cfg
 
-# workaround for 1.0.4
-#(cd src/fpc-%{version}; ln -s fcl/linux linux)
+# new ppc386 cuts PATH too (how to fix it???)
+export PATH="/usr/bin:/bin"
 
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 %{__make} -C src/%{name}-%{version} \
@@ -153,8 +157,6 @@ NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 
 # %{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
  
-#cp -a man/* $RPM_BUILD_ROOT%{_mandir}
-
 mv -f src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 
 ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
@@ -179,7 +181,7 @@ rm -f %{_sysconfdir}/fpc.cfg.new
 %attr(755,root,root) %{_bindir}/*
 %doc src/%{name}-%{version}/doc/{copying*,*.txt}
 %doc src/%{name}-%{version}/doc/faq.html
-%config %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
+%config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
 %dir %{_libdir}/%{name}/lexyacc
