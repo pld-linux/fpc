@@ -1,12 +1,10 @@
-# TODO:
-# - allow $PATH exceeding 255 chars
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
 Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	1.0.10
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
@@ -72,6 +70,7 @@ Dokumentacja do fpc w formacie PDF.
 
 %prep
 %setup -q -c -T -a1
+
 for i in *.tar.gz ; do
 	tar xzf $i
 done
@@ -162,6 +161,8 @@ ln -sf ppc386 $RPM_BUILD_ROOT%{_bindir}/fpc
 
 mv -f src/%{name}-%{version}/doc/faq.htm src/%{name}-%{version}/doc/faq.html
 
+ln -sf %{_bindir}/{as,ld} $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -185,6 +186,8 @@ rm -f %{_sysconfdir}/fpc.cfg.new
 %dir %{_libdir}/%{name}/lexyacc
 %{_libdir}/%{name}/%{version}/msg
 %{_libdir}/%{name}/%{version}/units
+%{_libdir}/%{name}/%{version}/as
+%{_libdir}/%{name}/%{version}/ld
 %{_libdir}/%{name}/lexyacc/*
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc386
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
