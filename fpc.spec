@@ -119,8 +119,7 @@ cp -a src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 
 ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
 
-gzip -9nf src/%{name}-%{version}/doc/{copying*,*.txt} \
-	$RPM_BUILD_ROOT%{_mandir}/man*/*
+gzip -9nf src/%{name}-%{version}/doc/{copying*,*.txt}
 
 mv -f src/%{name}-%{version}/doc/faq.htm src/%{name}-%{version}/doc/faq.html
 
