@@ -2,7 +2,7 @@ Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
 Name:		fpc
 Version:	1.0.4
-Release:	2
+Release:	3
 License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
@@ -136,8 +136,6 @@ cp -a src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
 ln -sf ppc386 $RPM_BUILD_ROOT%{_bindir}/fpc
 
-gzip -9nf src/%{name}-%{version}/doc/{copying*,*.txt}
-
 mv -f src/%{name}-%{version}/doc/faq.htm src/%{name}-%{version}/doc/faq.html
 
 %clean
@@ -155,7 +153,7 @@ rm -f %{_sysconfdir}/ppc386.cfg.new
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/*
-%doc src/%{name}-%{version}/doc/{copying*,*.txt}.gz
+%doc src/%{name}-%{version}/doc/{copying*,*.txt}
 %doc src/%{name}-%{version}/doc/faq.html
 %config %verify(not md5 size mtime) %{_sysconfdir}/ppc386.cfg
 %dir %{_libdir}/%{name}
