@@ -5,8 +5,6 @@ Version:	1.0.4
 Release:	2
 License:	GPL
 Group:		Development/Languages
-Group(de):	Entwicklung/Sprachen
-Group(pl):	Programowanie/Jêzyki
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/Linux/%{name}-%{version}.ELF.tar
 Source1:	%{name}-sample.cfg
@@ -36,9 +34,6 @@ rozszerza te jêzyki elementami takimi jak prze³adowywanie funkcji.
 Summary:	Free Pascal Compiler exaple programs
 Summary(pl):	Przyk³adowe programy do kompilatora Free Pascal
 Group:		Documentation
-Group(de):	Dokumentation
-Group(es):	Documentación
-Group(pl):	Dokumentacja
 Requires:	%{name} = %{version}
 
 %description examples
@@ -51,9 +46,6 @@ Przyk³adowe programy do kompilatora Free Pascal.
 Summary:	Free Pascal Compiler documentation
 Summary(pl):	Dokumentacja do kompilatora Free Pascal
 Group:		Documentation
-Group(de):	Dokumentation
-Group(es):	Documentación
-Group(pl):	Dokumentacja
 Requires:	%{name} = %{version}
 
 %description doc
