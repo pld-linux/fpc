@@ -1,7 +1,7 @@
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
 Name:		fpc
-Version:	0.99.14
+Version:	1.00
 Release:	1
 License:	GPL
 Group:		Development/Languages
@@ -41,22 +41,25 @@ Documentation for fpc HTML format.
 Dokumentacja do fpc w formacie HTML.
 
 %prep
-%setup -q
-mkdir sources && cd sources && tar -xzf ../sources.tar.gz \
-	      && tar -xzf ../libs.tar.gz && tar -xzf ../bins.tar.gz \
-	      && mkdir ../doc && cd ../doc && tar -xzf ../docs.tar.gz && cd ..
+%setup -q -c
+tar xf sources.tar
+tar xf binary.tar
+
+for i in *.tar.gz ; do
+	tar xzf $i
+done
 
 %build
-cd sources
-cp base/{Makefile,makefile.fpc} .
+cd sources/src/%{name}-%{version}
+#cp base/{Makefile,makefile.fpc} .
 
 # Currently we don't have these extenstions
-mkdir -p fcl/linux && echo ".PHONY:	all install" > fcl/linux/Makefile
-mkdir -p gtk       && echo ".PHONY:     all install" > gtk/Makefile
-mkdir -p api       && echo ".PHONY:     all install" > api/Makefile
-mkdir -p fv        && echo ".PHONY:     all install" > fv/Makefile
-mkdir -p gdbint    && echo ".PHONY:     all install" > gdbint/Makefile
-mkdir -p ide       && echo ".PHONY:     all install" > ide/Makefile
+#mkdir -p fcl/linux && echo ".PHONY:	all install" > fcl/linux/Makefile
+#mkdir -p gtk       && echo ".PHONY:     all install" > gtk/Makefile
+#mkdir -p api       && echo ".PHONY:     all install" > api/Makefile
+#mkdir -p fv        && echo ".PHONY:     all install" > fv/Makefile
+#mkdir -p gdbint    && echo ".PHONY:     all install" > gdbint/Makefile
+#mkdir -p ide       && echo ".PHONY:     all install" > ide/Makefile
 
 if [ "%{_target_cpu}" = "m68k" ]; then
 	CPU=M68K
