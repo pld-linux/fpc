@@ -4,7 +4,7 @@ Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	1.0.10
-Release:	1
+Release:	2
 License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
@@ -126,7 +126,7 @@ export PATH="/usr/bin:/bin"
 	FPC="$NEWPP" \
 	rtl_clean rtl_smart packages_base_smart fcl_smart packages_extra_smart utils_all
 
-# %{__make} -C src/%{name}-%{version}/docs pdf FPDOC=${NEWFPDOC}
+%{__make} -C src/%{name}-%{version}/docs pdf FPDOC=${NEWFPDOC}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -152,7 +152,7 @@ NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 	utils_distinstall \
 	man_install
 
-# %{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
+%{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
 
 mv -f src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 
@@ -197,6 +197,6 @@ rm -f %{_sysconfdir}/fpc.cfg.new
 %defattr(644,root,root,755)
 %{_examplesdir}/fpc
 
-#%files doc
-#%defattr(644,root,root,755)
-#%doc src/%{name}-%{version}/doc/*.pdf
+%files doc
+%defattr(644,root,root,755)
+%doc src/%{name}-%{version}/doc/*.pdf
