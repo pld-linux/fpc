@@ -103,7 +103,7 @@ esac
 
 PP=`pwd`/lib/fpc/%{version}/ppc386
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
-NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
+NEWFPDOC=`pwd`/src/fpc-%{version}/utils/fpdoc/fpdoc
 
 # ppc386 binary cuts PATH - sometimes before /usr/bin with needed as and ld
 export PATH="/usr/bin:/bin"
