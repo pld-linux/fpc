@@ -1,5 +1,4 @@
 # TODO:
-# - use dynamic linking
 # - allow $PATH exceeding 255 chars
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
@@ -18,7 +17,6 @@ Source1:	ftp://ftp.us.freepascal.org/pub/fpc/dist/Linux/i386/separate/binary.tar
 Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
 BuildRequires:	bin86
-BuildRequires:	glibc-static
 BuildRequires:	zlib-devel
 Requires:	gcc >= 2.95.2
 ExclusiveArch:	%{ix86} m68k
