@@ -131,7 +131,7 @@ NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
 
-install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
+install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/fpc.cfg
 
 # workaround for 1.0.4
 #(cd src/fpc-%{version}; ln -s fcl/linux linux)
