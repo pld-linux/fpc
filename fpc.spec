@@ -123,7 +123,7 @@ install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
 (cd src/fpc-%{version}; ln -s fcl/linux linux)
 
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
-make -C src/%{name}-%{version} \
+%{__make} -C src/%{name}-%{version} \
 	PREFIXINSTALLDIR=$RPM_BUILD_ROOT%{_prefix} \
 	PP="$NEWPP" \
 	compiler_install \
