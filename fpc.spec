@@ -1,37 +1,37 @@
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
 Name:		fpc
-Version:	0.99.12
+Version:	0.99.14
 Release:	1
-Copyright:	GPL
+License:	GPL
 Group:		Development/Languages
 Group(pl):	Programowanie/Jêzyki
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
-Source0:	ftp://gdzies.w.be/pub/fpc/%{name}-%{version}.ELF.tar.gz
+Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/Linux/%{name}-%{version}.ELF.tar
 Source1:	fpc-sample.cfg
 URL:		http://www.freepascal.org/
 ExclusiveArch:	%{ix86} m68k
 Buildroot:	/tmp/%{name}-%{version}-root
 
 %description
-Free Pascal is a 32-bit compiler for the i386 and m68k processors.
-Free Pascal is designed to be, as much as possible, source compatible with
-Turbo Pascal 7.0 and Delphi 4 (although this goal is not yet attained),
-but it also enhances these languages with elements like function
-overloading. And, unlike these ancestors, it supports multiple platforms.
+Free Pascal is a 32-bit compiler for the i386 and m68k processors. Free
+Pascal is designed to be, as much as possible, source compatible with Turbo
+Pascal 7.0 and Delphi 4 (although this goal is not yet attained), but it
+also enhances these languages with elements like function overloading. And,
+unlike these ancestors, it supports multiple platforms.
 
 %description -l pl
-Free Pascal to 32 bitowy kompilator dla procesorów i386 oraz m86k.
-Free Pascal zosta³ zaprojektowany by byæ (jak tylko to mo¿liwe)
-kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal równie¿
-rozszerza te jêzyki elementami takimi jak prze³adowywanie funkcji.
+Free Pascal to 32 bitowy kompilator dla procesorów i386 oraz m86k. Free
+Pascal zosta³ zaprojektowany by byæ (jak tylko to mo¿liwe) kompatybilnym z
+Turbo Pascal 7.0 oraz Delphi 4. Free Pascal równie¿ rozszerza te jêzyki
+elementami takimi jak prze³adowywanie funkcji.
 
 %package doc
-Summary:        Free Pascal Compiler documentation
-Summary(pl):    Dokumentacja do kompilatora Free Pascal
-Group:          Documentation
-Group(pl):      Dokumentacja
-Requires:       %{name} = %{version}
+Summary:	Free Pascal Compiler documentation
+Summary(pl):	Dokumentacja do kompilatora Free Pascal
+Group:		Documentation
+Group(pl):	Dokumentacja
+Requires:	%{name} = %{version}
 
 %description doc
 Documentation for fpc HTML format.
@@ -73,8 +73,8 @@ make \
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d              $RPM_BUILD_ROOT/etc/
-install %{SOURCE1}      $RPM_BUILD_ROOT/etc/ppc386.cfg
+install -d              $RPM_BUILD_ROOT%{_sysconfdir}/
+install %{SOURCE1}      $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
 
 cd sources && make \
 	PP="`pwd`/ppc386" \
@@ -93,9 +93,9 @@ umask 022
 GCCSPEC=`(gcc -v 2>&1)| head -n 1| awk '{ print $4 } '`
 GCCDIR=`dirname $GCCSPEC`
 echo "Found libgcc.a in $GCCDIR"
-sed -e "s#\$GCCDIR#$GCCDIR#" /etc/ppc386.cfg > /etc/ppc386.cfg.new
-sed -e "s#\$1#%{_libdir}/%{name}/%{version}#" /etc/ppc386.cfg.new > /etc/ppc386.cfg
-rm -f /etc/ppc386.cfg.new
+sed -e "s#\$GCCDIR#$GCCDIR#" %{_sysconfdir}/ppc386.cfg > %{_sysconfdir}/ppc386.cfg.new
+sed -e "s#\$1#%{_libdir}/%{name}/%{version}#" %{_sysconfdir}/ppc386.cfg.new > %{_sysconfdir}/ppc386.cfg
+rm -f %{_sysconfdir}/ppc386.cfg.new
 
 %files
 %defattr(644,root,root,755)
