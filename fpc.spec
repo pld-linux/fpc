@@ -11,7 +11,7 @@ Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/Linux/%{name}-%{version}.ELF.tar
 Source1:	fpc-sample.cfg
 URL:		http://www.freepascal.org/
 ExclusiveArch:	%{ix86} m68k
-Buildroot:	/tmp/%{name}-%{version}-root
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Free Pascal is a 32-bit compiler for the i386 and m68k processors. Free
