@@ -170,16 +170,16 @@ umask 022
 GCCSPEC=`(gcc -v 2>&1)| head -n 1| awk '{ print $4 } '`
 GCCDIR=`dirname $GCCSPEC`
 echo "Found libgcc.a in $GCCDIR"
-sed -e "s#\$GCCDIR#$GCCDIR#" %{_sysconfdir}/ppc386.cfg > %{_sysconfdir}/ppc386.cfg.new
-sed -e "s#\$1#%{_libdir}/%{name}/%{version}#" %{_sysconfdir}/ppc386.cfg.new > %{_sysconfdir}/ppc386.cfg
-rm -f %{_sysconfdir}/ppc386.cfg.new
+sed -e "s#\$GCCDIR#$GCCDIR#" %{_sysconfdir}/fpc.cfg > %{_sysconfdir}/fpc.cfg.new
+sed -e "s#\$1#%{_libdir}/%{name}/%{version}#" %{_sysconfdir}/fpc.cfg.new > %{_sysconfdir}/fpc.cfg
+rm -f %{_sysconfdir}/fpc.cfg.new
 
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/*
 %doc src/%{name}-%{version}/doc/{copying*,*.txt}
 %doc src/%{name}-%{version}/doc/faq.html
-%config %verify(not md5 size mtime) %{_sysconfdir}/ppc386.cfg
+%config %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
 %dir %{_libdir}/%{name}/lexyacc
