@@ -9,6 +9,7 @@ License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/Linux/%{name}-%{version}.ELF.tar
+# Source0-md5:	ab89dc1f02cbf76389d739add843927d
 Source1:	%{name}-sample.cfg
 Patch0:		%{name}-poptasm.patch
 Patch1:		%{name}-glibc.patch
