@@ -2,7 +2,7 @@ Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
 Name:		fpc
 Version:	1.00
-Release:	1
+Release:	2
 License:	GPL
 Group:		Development/Languages
 Group(pl):	Programowanie/Jêzyki
@@ -67,22 +67,39 @@ mv doc/%{name}-%{version}/* src/%{name}-%{version}/doc
 mkdir -p src/%{name}-%{version}/man && echo ".PHONY:	all install installman" > src/%{name}-%{version}/man/Makefile
 
 %build
-PP=`pwd`/lib/fpc/%{version}/ppc386
-
-if [ "%{_target_cpu}" = "m68k" ]; then
+if [ "%{_build_cpu}" = "m68k" ]; then
 	CPU=M68K
 else
 	CPU=I386
 fi
 
 # DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
+case "%{_build_cpu}" in
+	i386)
+		OPTF="-OG2p1" ;;
+	i586)
+		OPTF="-OG2p2" ;;
+	i686)
+		OPTF="-Og2p3" ;;
+	*)
+		OPTF="-O2" ;;
+esac
+PP=`pwd`/lib/fpc/%{version}/ppc386
+NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 %{__make} -C src/%{name}-%{version} \
-	OPT="-O2" \
-	RELEASE=1 \
+	OPT="$OPTF -Xs -n" \
+	RELEASE="" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
 	PP="$PP" \
-	all
+	compiler_cycle
+%{__make} -C src/%{name}-%{version} \
+	OPT="$OPTF -Xs -n" \
+	RELEASE="" \
+	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
+	BININSTALLDIR=%{_bindir} \
+	PP="$NEWPP" \
+	rtl_all api_all fcl_all packages_all utils_all
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -90,19 +107,17 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
 
 install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
 
-PP=`pwd`/src/fpc-%{version}/compiler/ppc386
+NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 make -C src/%{name}-%{version} \
 	PREFIXINSTALLDIR=$RPM_BUILD_ROOT%{_prefix} \
-	PP="$PP" \
-	install
+	PP="$NEWPP" \
+	compiler_install \
+	rtl_install api_install fcl_install packages_install utils_install
 
 cp -a man/* $RPM_BUILD_ROOT%{_mandir}
 cp -a src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 
 ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
-
-strip --strip-unneeded $RPM_BUILD_ROOT%{_bindir}/*
-strip --strip-unneeded $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/ppc386
 
 gzip -9nf src/%{name}-%{version}/doc/{copying*,*.txt} \
 	$RPM_BUILD_ROOT%{_mandir}/man*/*
