@@ -154,12 +154,12 @@ NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 
 %{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
 
-mv -f src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
+cp -af src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 
 ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
 ln -sf ppc386 $RPM_BUILD_ROOT%{_bindir}/fpc
 
-mv -f src/%{name}-%{version}/doc/faq.htm src/%{name}-%{version}/doc/faq.html
+cp -af src/%{name}-%{version}/doc/faq.htm src/%{name}-%{version}/doc/faq.html
 
 ln -sf %{_bindir}/{as,ld} $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}
 
@@ -199,4 +199,4 @@ rm -f %{_sysconfdir}/fpc.cfg.new
 
 %files doc
 %defattr(644,root,root,755)
-%doc src/%{name}-%{version}/doc/*.pdf
+%doc src/%{name}-%{version}/docs/*.pdf
