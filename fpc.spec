@@ -127,7 +127,7 @@ export PATH="/usr/bin:/bin"
 	BININSTALLDIR=%{_bindir} \
 	PP="$NEWPP" \
 	FPC="$NEWPP" \
-	rtl_clean rtl_smart packages_base_smart fcl_smart packages_extra_smart utils_all 
+	rtl_clean rtl_smart packages_base_smart fcl_smart packages_extra_smart utils_all
 
 # %{__make} -C src/%{name}-%{version}/docs pdf FPDOC=${NEWFPDOC}
 
@@ -156,7 +156,7 @@ NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 	man_install
 
 # %{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
- 
+
 mv -f src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 
 ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
