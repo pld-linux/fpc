@@ -1,7 +1,7 @@
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
 Name:		fpc
-Version:	1.0.2
+Version:	1.0.4
 Release:	1
 License:	GPL
 Group:		Development/Languages
@@ -9,7 +9,10 @@ Group(pl):	Programowanie/Jêzyki
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/Linux/%{name}-%{version}.ELF.tar
 Source1:	fpc-sample.cfg
+Patch:		fpc-poptasm.patch
 URL:		http://www.freepascal.org/
+Requires:	gcc >= 2.95.2
+BuildRequires:	bin86
 ExclusiveArch:	%{ix86} m68k
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -66,6 +69,9 @@ mkdir -p src/%{name}-%{version}/doc
 mv doc/%{name}-%{version}/* src/%{name}-%{version}/doc
 mkdir -p src/%{name}-%{version}/man && echo ".PHONY:	all install installman" > src/%{name}-%{version}/man/Makefile
 
+cd src/%{name}-%{version}
+%patch0 -p0
+
 %build
 if [ "%{_build_cpu}" = "m68k" ]; then
 	CPU=M68K
@@ -84,21 +90,27 @@ case "%{_build_cpu}" in
 	*)
 		OPTF="-O2" ;;
 esac
+
 PP=`pwd`/lib/fpc/%{version}/ppc386
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
+
+# -O- optimalization to workaround bug in PP compiler in 1.0.4
 %{__make} -C src/%{name}-%{version} \
-	OPT="$OPTF -Xs -n" \
+	OPT="-O- -Xs -n" \
 	RELEASE="" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
 	PP="$PP" \
+	FPC="$PP" \
 	compiler_cycle
+
 %{__make} -C src/%{name}-%{version} \
 	OPT="$OPTF -Xs -n" \
 	RELEASE="" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
 	PP="$NEWPP" \
+	FPC="$NEWPP" \
 	rtl_all api_all fcl_all packages_all utils_all
 
 %install
@@ -106,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
 
 install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
+
+# workaround for 1.0.4
+(cd src/fpc-%{version}; ln -s fcl/linux linux)
 
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 make -C src/%{name}-%{version} \
