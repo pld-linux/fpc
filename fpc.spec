@@ -27,6 +27,19 @@ Free Pascal zosta³ zaprojektowany by byæ (jak tylko to mo¿liwe)
 kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal równie¿
 rozszerza te jêzyki elementami takimi jak prze³adowywanie funkcji.
 
+%package examples
+Summary:	Free Pascal Compiler exaple programs
+Summary(pl):	Przyk³adowe programy do kompilatora Free Pascal
+Group:		Documentation
+Group(pl):	Dokumentacja
+Requires:	%{name} = %{version}
+
+%description examples
+Free Pascal Compiler exaple programs.
+
+%description -l pl examples
+Przyk³adowe programy do kompilatora Free Pascal.
+
 %package doc
 Summary:	Free Pascal Compiler documentation
 Summary(pl):	Dokumentacja do kompilatora Free Pascal
@@ -35,10 +48,10 @@ Group(pl):	Dokumentacja
 Requires:	%{name} = %{version}
 
 %description doc
-Documentation for fpc HTML format.
+Documentation for fpc in PDF format.
 
 %description -l pl doc
-Dokumentacja do fpc w formacie HTML.
+Dokumentacja do fpc w formacie PDF.
 
 %prep
 %setup -q -c
@@ -49,45 +62,52 @@ for i in *.tar.gz ; do
 	tar xzf $i
 done
 
-%build
-cd sources/src/%{name}-%{version}
-#cp base/{Makefile,makefile.fpc} .
+mkdir -p src/%{name}-%{version}/doc
+mv doc/%{name}-%{version}/* src/%{name}-%{version}/doc
+mkdir -p src/%{name}-%{version}/man && echo ".PHONY:	all install installman" > src/%{name}-%{version}/man/Makefile
 
-# Currently we don't have these extenstions
-#mkdir -p fcl/linux && echo ".PHONY:	all install" > fcl/linux/Makefile
-#mkdir -p gtk       && echo ".PHONY:     all install" > gtk/Makefile
-#mkdir -p api       && echo ".PHONY:     all install" > api/Makefile
-#mkdir -p fv        && echo ".PHONY:     all install" > fv/Makefile
-#mkdir -p gdbint    && echo ".PHONY:     all install" > gdbint/Makefile
-#mkdir -p ide       && echo ".PHONY:     all install" > ide/Makefile
+%build
+PP=`pwd`/lib/fpc/%{version}/ppc386
 
 if [ "%{_target_cpu}" = "m68k" ]; then
 	CPU=M68K
 else
 	CPU=I386
 fi
-%{__make} \
-	OPT="$RPM_OPT_FLAGS" \
+
+# DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
+%{__make} -C src/%{name}-%{version} \
+	OPT="-O2" \
 	RELEASE=1 \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
-	PP="`pwd`/ppc386" \
+	PP="$PP" \
 	all
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
 
-install -d              $RPM_BUILD_ROOT%{_sysconfdir}/
-install %{SOURCE1}      $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
 
-cd sources && make \
-	PP="`pwd`/ppc386" \
-	BASEINSTALLDIR=$RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} \
-	BININSTALLDIR=$RPM_BUILD_ROOT%{_bindir} \
+PP=`pwd`/src/fpc-%{version}/compiler/ppc386
+make -C src/%{name}-%{version} \
+	PREFIXINSTALLDIR=$RPM_BUILD_ROOT%{_prefix} \
+	PP="$PP" \
 	install
 
-ln -sf %{_libdir}/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
-strip $RPM_BUILD_ROOT%{_bindir}/*
+cp -a man/* $RPM_BUILD_ROOT%{_mandir}
+cp -a src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
+
+ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
+
+strip --strip-unneeded $RPM_BUILD_ROOT%{_bindir}/*
+strip --strip-unneeded $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/ppc386
+
+gzip -9nf src/%{name}-%{version}/doc/{copying*,*.txt} \
+	$RPM_BUILD_ROOT%{_mandir}/man*/*
+
+mv -f src/%{name}-%{version}/doc/faq.htm src/%{name}-%{version}/doc/faq.html
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -104,13 +124,23 @@ rm -f %{_sysconfdir}/ppc386.cfg.new
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/*
+%doc src/%{name}-%{version}/doc/{copying*,*.txt}.gz
+%doc src/%{name}-%{version}/doc/faq.html
 %config %verify(not md5 size mtime) %{_sysconfdir}/ppc386.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
+%dir %{_libdir}/%{name}/lexyacc
 %{_libdir}/%{name}/%{version}/msg
-%{_libdir}/%{name}/%{version}/rtl
+%{_libdir}/%{name}/%{version}/units
+%{_libdir}/%{name}/lexyacc/*
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc386
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
+%{_mandir}/man*/*
+
+%files examples
+%defattr(644,root,root,755)
+%doc %{_examplesdir}/fpc
 
 %files doc
 %defattr(644,root,root,755)
-%doc doc/*
+%doc src/%{name}-%{version}/doc/*.pdf
