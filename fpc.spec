@@ -39,7 +39,7 @@ Requires:	%{name} = %{version}
 %description examples
 Free Pascal Compiler exaple programs.
 
-%description -l pl examples
+%description examples -l pl
 Przyk³adowe programy do kompilatora Free Pascal.
 
 %package doc
@@ -51,7 +51,7 @@ Requires:	%{name} = %{version}
 %description doc
 Documentation for fpc in PDF format.
 
-%description -l pl doc
+%description doc -l pl
 Dokumentacja do fpc w formacie PDF.
 
 %prep
