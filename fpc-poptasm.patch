@@ -1,0 +1,245 @@
+Index: compiler/popt386.pas
+===================================================================
+RCS file: /FPC/CVS/fpc/compiler/Attic/popt386.pas,v
+retrieving revision 1.1.2.7
+retrieving revision 1.1.2.9
+diff -u -r1.1.2.7 -r1.1.2.9
+--- compiler/popt386.pas	2000/12/05 09:55:09	1.1.2.7
++++ compiler/popt386.pas	2001/01/10 10:27:55	1.1.2.9
+@@ -1,5 +1,5 @@
+  {
+-    $Id$
++    $Id$
+     Copyright (c) 1998-2000 by Florian Klaempfl and Jonas Maebe
+ 
+     This unit contains the peephole optimizer.
+@@ -1510,16 +1510,16 @@
+                 If (AktOptProcessor < ClassP6) And
+                    GetNextInstruction(p, hp1) And
+                    (hp1^.typ = ait_instruction) And
+-                   (paicpu(hp1)^.opcode = A_JMP) Then
++                   (paicpu(hp1)^.opcode = A_JMP) And
++                   (paicpu(hp1)^.oper[0].typ = top_symbol) Then
+                   Begin
+-                    Inc(paicpu(hp1)^.oper[0].sym^.refs);
+                     hp2 := New(Paicpu,op_sym(A_PUSH,S_L,paicpu(hp1)^.oper[0].sym));
+                     InsertLLItem(AsmL, p^.previous, p, hp2);
+                     Paicpu(p)^.opcode := A_JMP;
++                    Paicpu(p)^.is_jmp := true;
+                     AsmL^.Remove(hp1);
+                     Dispose(hp1, Done)
+                   End;
+-
+ {$ifdef USECMOV}
+               A_Jcc:
+                 if (aktspecificoptprocessor=ClassP6) then
+@@ -1760,6 +1760,12 @@
+ 
+ {
+  $Log$
++ Revision 1.1.2.9  2001/01/10 10:27:55  jonas
++   * really fixed problems with -Op2 opts
++
++ Revision 1.1.2.8  2001/01/07 15:46:36  jonas
++   * fixed bug in call/jmp optimization with -Op1 and -Op2
++
+  Revision 1.1.2.7  2000/12/05 09:55:09  jonas
+    - removed all newoptimizations stuff since it will never be active under
+      1.0.x anyway
+Index: compiler/cpuasm.pas
+===================================================================
+RCS file: /FPC/CVS/fpc/compiler/Attic/cpuasm.pas,v
+retrieving revision 1.1.2.2
+retrieving revision 1.1.2.5
+diff -u -r1.1.2.2 -r1.1.2.5
+--- compiler/cpuasm.pas	2000/10/15 10:51:15	1.1.2.2
++++ compiler/cpuasm.pas	2001/01/13 15:03:26	1.1.2.5
+@@ -1,5 +1,5 @@
+ {
+-    $Id$
++    $Id$
+     Copyright (c) 1998-2000 by Florian Klaempfl and Peter Vreman
+ 
+     Contains the assembler object for the i386
+@@ -117,11 +117,13 @@
+      procedure CheckNonCommutativeOpcodes;
+   private
+      segprefix : tregister;
++     swapped   : boolean;
+      procedure init(op : tasmop;_size : topsize); { this need to be called by all constructor }
+ {$ifndef NOAG386BIN}
+   public
+      { the next will reset all instructions that can change in pass 2 }
+      procedure ResetPass2;
++     function  CheckIfValid:boolean;
+      function  Pass1(offset:longint):longint;virtual;
+      procedure Pass2;virtual;
+   private
+@@ -318,6 +320,7 @@
+       begin
+          typ:=ait_instruction;
+          is_jmp:=false;
++         swapped:=false;
+          segprefix:=R_NO;
+          opcode:=op;
+          opsize:=_size;
+@@ -552,14 +555,15 @@
+       var
+         i : longint;
+       begin
+-{$ifndef nojmpfix}
+-        if is_jmp then
+-          dec(PasmLabel(oper[0].sym)^.refs)
+-        else
+-{$endif nojmpfix}
+-          for i:=1 to ops do
+-            if (oper[i-1].typ=top_ref) then
+-              dispose(oper[i-1].ref);
++        case oper[0].typ of
++          top_ref:
++            dispose(oper[0].ref);
++          top_symbol:
++            dec(Pasmsymbol(oper[0].sym)^.refs);
++        end;
++        for i:=2 to ops do
++          if (oper[i-1].typ=top_ref) then
++            dispose(oper[i-1].ref);
+         inherited done;
+       end;
+ 
+@@ -662,6 +666,8 @@
+       var
+         p : TOper;
+       begin
++        if Swapped then
++         exit;
+         { Fix the operands which are in AT&T style and we need them in Intel style }
+         case ops of
+           2 : begin
+@@ -677,6 +683,7 @@
+                 oper[2]:=p;
+               end;
+         end;
++        Swapped:=true;
+       end;
+ 
+ { This check must be done with the operand in ATT order
+@@ -932,20 +939,15 @@
+ end;
+ 
+ 
+-function taicpu.Pass1(offset:longint):longint;
++function taicpu.CheckIfValid:boolean;
+ var
+   m,i : longint;
+ begin
+-  Pass1:=0;
+-{ Save the old offset and set the new offset }
+-  InsOffset:=Offset;
++  CheckIfValid:=false;
+ { Things which may only be done once, not when a second pass is done to
+   optimize }
+   if Insentry=nil then
+    begin
+-     { Check if error last time then InsSize=-1 }
+-     if InsSize=-1 then
+-      exit;
+      { We need intel style operands }
+      SwapOperands;
+      { create the .ot fields }
+@@ -955,16 +957,9 @@
+    end
+   else
+    begin
+-{$ifdef PASS2FLAG}
+-     { we are here in a second pass, check if the instruction can be optimized }
+-     if (InsEntry^.flags and IF_PASS2)=0 then
+-      begin
+-        Pass1:=InsSize;
+-        exit;
+-      end;
+-     { update the .ot fields, some top_const can be updated }
+-     create_ot;
+-{$endif}
++     { we've already an insentry so it's valid }
++     CheckIfValid:=true;
++     exit;
+    end;
+ { Lookup opcode in the table }
+   InsSize:=-1;
+@@ -987,8 +982,7 @@
+         InsSize:=calcsize(insentry);
+         if (segprefix<>R_NO) then
+          inc(InsSize);
+-        Pass1:=InsSize;
+-        LastInsOffset:=InsOffset;
++        CheckIfValid:=true;
+         exit;
+       end;
+      inc(i);
+@@ -999,6 +993,45 @@
+ { No instruction found, set insentry to nil and inssize to -1 }
+   insentry:=nil;
+   inssize:=-1;
++end;
++
++
++
++function taicpu.Pass1(offset:longint):longint;
++begin
++  Pass1:=0;
++{ Save the old offset and set the new offset }
++  InsOffset:=Offset;
++{ Things which may only be done once, not when a second pass is done to
++  optimize }
++  if Insentry=nil then
++   begin
++     { Check if error last time then InsSize=-1 }
++     if InsSize=-1 then
++      exit;
++     { set the file postion }
++     aktfilepos:=fileinfo;
++   end
++  else
++   begin
++{$ifdef PASS2FLAG}
++     { we are here in a second pass, check if the instruction can be optimized }
++     if (InsEntry^.flags and IF_PASS2)=0 then
++      begin
++        Pass1:=InsSize;
++        exit;
++      end;
++     { update the .ot fields, some top_const can be updated }
++     create_ot;
++{$endif}
++   end;
++{ Check if it's a valid instruction }
++  if CheckIfValid then
++   begin
++     LastInsOffset:=InsOffset;
++     Pass1:=InsSize;
++     exit;
++   end;
+   LastInsOffset:=-1;
+ end;
+ 
+@@ -1677,6 +1710,12 @@
+ end.
+ {
+   $Log$
++  Revision 1.1.2.5  2001/01/13 15:03:26  jonas
++    * fixed bug in taicpu.done regardin top_symbols
++
++  Revision 1.1.2.4  2001/01/12 19:18:02  peter
++    * check for valid asm instructions
++
+   Revision 1.1.2.2  2000/10/15 10:51:15  florian
+    * fixed xmm register access
+ 
+@@ -1743,4 +1782,4 @@
+   Revision 1.17  1999/08/01 23:55:53  michael
+   * Moved taitempalloc
+ 
+-}
+\ No newline at end of file
++}
