@@ -1,18 +1,18 @@
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
-Summary(ru_RU.KOI8-R):	Свободный компилятор Pascal
-Summary(uk_UA.KOI8-U):	В╕льний комп╕лятор Pascal
+Summary(ru):	Свободный компилятор Pascal
+Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
-Version:	1.0.4
-Release:	3
+Version:	1.0.10
+Release:	0.1
 License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
-Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/Linux/%{name}-%{version}.ELF.tar
-# Source0-md5:	ab89dc1f02cbf76389d739add843927d
-Source1:	%{name}-sample.cfg
-Patch0:		%{name}-poptasm.patch
-Patch1:		%{name}-glibc.patch
+Source0:	ftp://ftp.us.freepascal.org/pub/fpc/dist/source-%{version}/%{name}-%{version}-src.tar.gz
+# Source0-md5:	da2ec003500584649cb31288613c33fa
+Source1:	ftp://ftp.us.freepascal.org/pub/fpc/dist/Linux/i386/separate/binary.tar
+# Source1-md5:	62c7ac6c21c44276b5e14bf34265d185
+Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
 Requires:	gcc >= 2.95.2
 BuildRequires:	bin86
@@ -35,12 +35,12 @@ Free Pascal zostaЁ zaprojektowany by byФ (jak tylko to mo©liwe)
 kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal rСwnie©
 rozszerza te jЙzyki elementami takimi jak przeЁadowywanie funkcji.
 
-%description -l ru_RU.KOI8-R
+%description -l ru
 FPC -- 32-битный компилятор Pascal, совместимый с Turbo Pascal 7.0 и Delphi.
 Поставляется с RTL (библиотекой времени исполнения), FCL (библиотекой свободных
 компонент), интерфейсами к gtk, ncurses, zlib, mysql, postgres, ibase.
 
-%description -l uk_UA.KOI8-U
+%description -l uk
 FPC -- 32-б╕тний комп╕лятор Pascal, сум╕сний ╕з Turbo Pascal 7.0 та Delphi.
 Постача╓ться ╕з RTL (б╕бл╕отекою часу виконання), FCL (б╕бл╕отекою в╕льних
 компонент), ╕нтерфейсами до gtk, ncurses, zlib, mysql, postgres, ibase.
@@ -70,10 +70,7 @@ Documentation for fpc in PDF format.
 Dokumentacja do fpc w formacie PDF.
 
 %prep
-%setup -q -c
-tar xf sources.tar
-tar xf binary.tar
-
+%setup -q -c -T -a1
 for i in *.tar.gz ; do
 	tar xzf $i
 done
@@ -83,8 +80,7 @@ mv doc/%{name}-%{version}/* src/%{name}-%{version}/doc
 mkdir -p src/%{name}-%{version}/man && echo ".PHONY:	all install installman" > src/%{name}-%{version}/man/Makefile
 
 cd src/%{name}-%{version}
-%patch0 -p0
-%patch1 -p0
+tar xzf %{SOURCE0}
 
 %build
 if [ "%{_build_cpu}" = "m68k" ]; then
@@ -107,6 +103,7 @@ esac
 
 PP=`pwd`/lib/fpc/%{version}/ppc386
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
+NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
 
 # -O- optimalization to workaround bug in PP compiler in 1.0.4
 %{__make} -C src/%{name}-%{version} \
@@ -125,26 +122,40 @@ NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 	BININSTALLDIR=%{_bindir} \
 	PP="$NEWPP" \
 	FPC="$NEWPP" \
-	rtl_all api_all fcl_all packages_all utils_all
+	rtl_clean rtl_smart packages_base_smart fcl_smart packages_extra_smart utils_all 
+
+# %{__make} -C src/%{name}-%{version}/docs pdf FPDOC=${NEWFPDOC}
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
 
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
+install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/ppc386.cfg
 
 # workaround for 1.0.4
-(cd src/fpc-%{version}; ln -s fcl/linux linux)
+#(cd src/fpc-%{version}; ln -s fcl/linux linux)
 
 NEWPP=`pwd`/src/fpc-%{version}/compiler/ppc386
 %{__make} -C src/%{name}-%{version} \
-	PREFIXINSTALLDIR=$RPM_BUILD_ROOT%{_prefix} \
+	INSTALL_PREFIX=$RPM_BUILD_ROOT%{_prefix} \
+	INSTALL_BINDIR=$RPM_BUILD_ROOT%{_bindir} \
+	INSTALL_LIBDIR=$RPM_BUILD_ROOT%{_libdir} \
+	INSTALL_DOCDIR=$RPM_BUILD_ROOT%{_docdir} \
+	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir} \
 	PP="$NEWPP" \
-	compiler_install \
-	rtl_install api_install fcl_install packages_install utils_install
+	compiler_distinstall \
+	rtl_distinstall \
+	packages_distinstall \
+	fcl_distinstall \
+	utils_distinstall \
+	man_install
 
-cp -a man/* $RPM_BUILD_ROOT%{_mandir}
-cp -a src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
+# %{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
+ 
+#cp -a man/* $RPM_BUILD_ROOT%{_mandir}
+
+mv -f src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
 
 ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
 ln -sf ppc386 $RPM_BUILD_ROOT%{_bindir}/fpc
@@ -183,6 +194,6 @@ rm -f %{_sysconfdir}/ppc386.cfg.new
 %defattr(644,root,root,755)
 %{_examplesdir}/fpc
 
-%files doc
-%defattr(644,root,root,755)
-%doc src/%{name}-%{version}/doc/*.pdf
+#%files doc
+#%defattr(644,root,root,755)
+#%doc src/%{name}-%{version}/doc/*.pdf
