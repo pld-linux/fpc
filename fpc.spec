@@ -104,7 +104,7 @@ NEWPP=`pwd`/compiler/ppc%{_bname}
 
 %{__make} compiler_cycle \
 	OPT="$OPTF -Xs -n" \
-	RELEASE="" \
+	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
 	PP="$PP" \
@@ -112,7 +112,7 @@ NEWPP=`pwd`/compiler/ppc%{_bname}
 	compiler_cycle
 
 %{__make} OPT="$OPTF -Xs -n" \
-	RELEASE="" \
+	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
 	PP="$NEWPP" \
@@ -125,8 +125,6 @@ NEWPP=`pwd`/compiler/ppc%{_bname}
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
-
-# install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/fpc.cfg
 
 NEWPP=`pwd`/compiler/ppc%{_bname}
 FPCMAKE=`pwd`/utils/fpcm/fpcmake
@@ -143,8 +141,10 @@ FPCMAKE=`pwd`/utils/fpcm/fpcmake
 	INSTALL_LIBDIR=$RPM_BUILD_ROOT%{_libdir} \
 	INSTALL_DOCDIR=$RPM_BUILD_ROOT%{_docdir} \
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir} \
-	INSTALL_BASEDIR=$RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}
+	INSTALL_BASEDIR=$RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} \
+	CODPATH=$RPM_BUILD_ROOT%{_libdir}/%{name}/lexyacc
 
+sh compiler/utils/samplecfg %{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
 
 #%{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
 
@@ -160,14 +160,14 @@ FPCMAKE=`pwd`/utils/fpcm/fpcmake
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
-umask 022
-GCCSPEC=`(gcc -v 2>&1)| head -n 1| awk '{ print $4 } '`
-GCCDIR=`dirname $GCCSPEC`
-echo "Found libgcc.a in $GCCDIR"
-sed -e "s#\$GCCDIR#$GCCDIR#" %{_sysconfdir}/fpc.cfg > %{_sysconfdir}/fpc.cfg.new
-sed -e "s#\$1#%{_libdir}/%{name}/%{version}#" %{_sysconfdir}/fpc.cfg.new > %{_sysconfdir}/fpc.cfg
-rm -f %{_sysconfdir}/fpc.cfg.new
+#%post
+#umask 022
+#GCCSPEC=`(gcc -v 2>&1)| head -n 1| awk '{ print $4 } '`
+#GCCDIR=`dirname $GCCSPEC`
+#echo "Found libgcc.a in $GCCDIR"
+#sed -e "s#\$GCCDIR#$GCCDIR#" %{_sysconfdir}/fpc.cfg > %{_sysconfdir}/fpc.cfg.new
+#sed -e "s#\$1#%{_libdir}/%{name}/%{version}#" %{_sysconfdir}/fpc.cfg.new > %{_sysconfdir}/fpc.cfg
+#rm -f %{_sysconfdir}/fpc.cfg.new
 
 %files
 %defattr(644,root,root,755)
@@ -177,10 +177,10 @@ rm -f %{_sysconfdir}/fpc.cfg.new
 #%config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
-#%dir %{_libdir}/%{name}/lexyacc
+%dir %{_libdir}/%{name}/lexyacc
 %{_libdir}/%{name}/%{version}/msg
 %{_libdir}/%{name}/%{version}/units
-#%{_libdir}/%{name}/lexyacc/*
+%{_libdir}/%{name}/lexyacc/*
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
 #%{_mandir}/man*/*
