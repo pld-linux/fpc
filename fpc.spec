@@ -1,7 +1,6 @@
 # TODO: 
-# - sparc/ppc version, check on x86
 # - documentation
-# - make it working ;)
+# - check why it builds all static..
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
 Summary(ru):	Свободный компилятор Pascal
@@ -151,6 +150,8 @@ FPCMAKE=`pwd`/utils/fpcm/fpcmake
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir} \
 	INSTALL_BASEDIR=$RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} \
 	CODPATH=$RPM_BUILD_ROOT%{_libdir}/%{name}/lexyacc
+
+ln -sf %{_libdir}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
 
 sh compiler/utils/samplecfg %{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
 
