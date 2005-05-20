@@ -1,5 +1,4 @@
 # TODO: 
-# - documentation
 # - check why it builds all static..
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
@@ -7,7 +6,7 @@ Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	2.0.0
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
@@ -21,14 +20,13 @@ Source3:	http://dl.sourceforge.net/freepascal/fpc-%{version}.powerpc-linux.tar
 # Source3-md5:	7019384e09411902e530dfe55d4ff145
 Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
-#Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
-#BuildRequires:	zlib-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
+BuildRequires:	tetex-fonts-jknappen
 BuildRequires:	tetex-format-pdflatex
 Requires:	binutils
-ExclusiveArch:	%{ix86} m68k amd64 ppc sparc
+ExclusiveArch:	%{ix86} amd64 ppc sparc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -112,6 +110,18 @@ PP=`pwd`/bin/lib/%{name}/%{version}/ppc%{_bname}
 NEWPP=`pwd`/compiler/ppc%{_bname}
 NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
 
+# DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
+case "%{_build_cpu}" in
+	i386,i486)
+		OPTF="-OG2p1" ;;
+	i586)
+		OPTF="-OG2p2" ;;
+	i686,athlon)
+		OPTF="-Og2p3" ;;
+	*)
+		OPTF="-O2" ;;
+esac
+
 %{__make} compiler_cycle \
 	OPT="$OPTF -Xs -n" \
 	RELEASE="1" \
@@ -137,9 +147,10 @@ NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
 	ide_all \
 	utils_all
 
-#%{__make} -C docs pdf \
-#	FPDOC=$NEWFPDOC \
-#	FPC="$NEWPP"
+export save_size=10000
+%{__make} -C docs pdf \
+	FPDOC=$NEWFPDOC \
+	FPC="$NEWPP"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -173,34 +184,15 @@ ln -sf %{_libdir}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
 
 sh compiler/utils/samplecfg %{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
 
-#%{__make} -C src/%{name}-%{version}/docs pdfinstall DOCINSTALLDIR=$RPM_BUILD_ROOT%{_docdir}
-
-#cp -af src/%{name}-%{version}/doc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/fpc
-
-#ln -sf ../lib/%{name}/%{version}/ppc386 $RPM_BUILD_ROOT%{_bindir}/ppc386
-#ln -sf ppc386 $RPM_BUILD_ROOT%{_bindir}/fpc
-
-#cp -af src/%{name}-%{version}/doc/faq.htm src/%{name}-%{version}/doc/faq.html
-
-#ln -sf %{_bindir}/{as,ld} $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}
+cp -f install/doc/faq.htm faq.html
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-#%post
-#umask 022
-#GCCSPEC=`(gcc -v 2>&1)| head -n 1| awk '{ print $4 } '`
-#GCCDIR=`dirname $GCCSPEC`
-#echo "Found libgcc.a in $GCCDIR"
-#sed -e "s#\$GCCDIR#$GCCDIR#" %{_sysconfdir}/fpc.cfg > %{_sysconfdir}/fpc.cfg.new
-#sed -e "s#\$1#%{_libdir}/%{name}/%{version}#" %{_sysconfdir}/fpc.cfg.new > %{_sysconfdir}/fpc.cfg
-#rm -f %{_sysconfdir}/fpc.cfg.new
-
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/*
-#%doc src/%{name}-%{version}/doc/{copying*,*.txt}
-#%doc src/%{name}-%{version}/doc/faq.html
+%doc faq.html install/doc/{copying*,*.txt}
 %config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
@@ -219,4 +211,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files doc
 %defattr(644,root,root,755)
-#%doc src/%{name}-%{version}/docs/*.pdf
+%doc docs/*.pdf
