@@ -27,7 +27,7 @@ URL:		http://www.freepascal.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
 BuildRequires:	tetex-format-pdflatex
-Requires:	gcc >= 2.95.2
+Requires:	binutils
 ExclusiveArch:	%{ix86} m68k amd64 ppc sparc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -155,6 +155,7 @@ FPCMAKE=`pwd`/utils/fpcm/fpcmake
 	packages_distinstall \
 	ide_distinstall \
 	utils_distinstall \
+	man_install \
 	PP="$NEWPP" \
 	FPCMAKE="$FPCMAKE" \
 	SMARTLINK=YES \
@@ -165,6 +166,7 @@ FPCMAKE=`pwd`/utils/fpcm/fpcmake
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir} \
 	INSTALL_BASEDIR=$RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} \
 	INSTALL_EXAMPLEDIR=$RPM_BUILD_ROOT%{_examplesdir}/%{name} \
+	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir} \
 	CODPATH=$RPM_BUILD_ROOT%{_libdir}/%{name}/lexyacc
 
 ln -sf %{_libdir}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
@@ -209,7 +211,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/lexyacc/*
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
-#%{_mandir}/man*/*
+%{_mandir}/man*/*
 
 %files examples
 %defattr(644,root,root,755)
