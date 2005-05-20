@@ -14,13 +14,13 @@ Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
 Source0:	http://switch.dl.sourceforge.net/sourceforge/freepascal/%{name}-%{version}.source.tar.gz
 # Source0-md5:	3f9c64d0146a3631f6963fd7477776d1
-Source1:        http://dl.sourceforge.net/freepascal/fpc-%{version}.i386-linux.tar
+Source1:	http://dl.sourceforge.net/freepascal/fpc-%{version}.i386-linux.tar
 # Source1-md5:	5f0a5fba632a811dcfdafe0ff80476a3
-Source2:        http://dl.sourceforge.net/freepascal/fpc-%{version}.x86_64-linux.tar
+Source2:	http://dl.sourceforge.net/freepascal/fpc-%{version}.x86_64-linux.tar
 # Source2-md5:	36270de604c6b5ad3af8aaa08143e88f
-Source3:        http://dl.sourceforge.net/freepascal/fpc-%{version}.powerpc-linux.tar
+Source3:	http://dl.sourceforge.net/freepascal/fpc-%{version}.powerpc-linux.tar
 # Source3-md5:	7019384e09411902e530dfe55d4ff145
-Source4:        http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
+Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
 #Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
