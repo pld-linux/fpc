@@ -24,7 +24,7 @@ Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
 #Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
-BuildRequires:	bin86
+#BuildRequires:	bin86
 BuildRequires:	zlib-devel
 Requires:	gcc >= 2.95.2
 ExclusiveArch:	%{ix86} m68k amd64 ppc sparc
@@ -79,13 +79,13 @@ Documentation for fpc in PDF format.
 Dokumentacja do fpc w formacie PDF.
 
 %prep
-%setup -q -c -n %{name}
+%setup -q -n %{name}
 %ifarch %{ix86}
-%setup -q -D -n %{name} -a 1
+tar xf %{SOURCE1}
 %define _bname 386
 %endif
 %ifarch amd64
-%setup -q -D -n %{name} -a 2
+tar xf %{SOURCE2}
 %define _bname x64
 %endif
 
@@ -174,7 +174,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/*
 #%doc src/%{name}-%{version}/doc/{copying*,*.txt}
 #%doc src/%{name}-%{version}/doc/faq.html
-#%config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
+%config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
 %dir %{_libdir}/%{name}/lexyacc
