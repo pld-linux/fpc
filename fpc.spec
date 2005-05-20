@@ -23,8 +23,10 @@ Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
 #Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
-#BuildRequires:	bin86
 #BuildRequires:	zlib-devel
+BuildRequires:	ncurses-devel
+BuildRequires:	gpm-devel
+BuildRequires:	tetex-format-pdflatex
 Requires:	gcc >= 2.95.2
 ExclusiveArch:	%{ix86} m68k amd64 ppc sparc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -108,6 +110,7 @@ ln -sf `pwd`/lib/%{name}/%{version}/ppc* bin
 %build
 PP=`pwd`/bin/lib/%{name}/%{version}/ppc%{_bname}
 NEWPP=`pwd`/compiler/ppc%{_bname}
+NEWFPDOC=`pwd`/utils/fpdoc/fpdoc
 
 %{__make} compiler_cycle \
 	OPT="$OPTF -Xs -n" \
@@ -116,7 +119,7 @@ NEWPP=`pwd`/compiler/ppc%{_bname}
 	BININSTALLDIR=%{_bindir} \
 	PP="$PP" \
 	FPC="$PP" \
-	compiler_cycle
+	SMARTLINK=YES
 
 %{__make} OPT="$OPTF -Xs -n" \
 	RELEASE="1" \
@@ -125,9 +128,18 @@ NEWPP=`pwd`/compiler/ppc%{_bname}
 	PP="$NEWPP" \
 	FPC="$NEWPP" \
 	DATA2INC=`pwd`/utils/data2inc \
-	rtl packages_base_all fcl packages_extra_all utils_all
+	SMARTLINK=YES \
+	rtl_clean rtl_smart \
+	packages_base_smart \
+	fcl_smart \
+	fv_smart \
+	packages_extra_smart \
+	ide_all \
+	utils_all
 
-#%{__make} -C src/%{name}-%{version}/docs pdf FPDOC=${NEWFPDOC}
+#%{__make} -C docs pdf \
+#	FPDOC=$NEWFPDOC \
+#	FPC="$NEWPP"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -136,19 +148,23 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
 NEWPP=`pwd`/compiler/ppc%{_bname}
 FPCMAKE=`pwd`/utils/fpcm/fpcmake
 %{__make} \
-	compiler_install \
-	rtl_install \
-	fcl_install \
-	packages_install \
-	utils_install \
+	compiler_distinstall \
+	rtl_distinstall \
+	fcl_distinstall \
+	fv_distinstall \
+	packages_distinstall \
+	ide_distinstall \
+	utils_distinstall \
 	PP="$NEWPP" \
 	FPCMAKE="$FPCMAKE" \
+	SMARTLINK=YES \
 	INSTALL_PREFIX=$RPM_BUILD_ROOT%{_prefix} \
 	INSTALL_BINDIR=$RPM_BUILD_ROOT%{_bindir} \
 	INSTALL_LIBDIR=$RPM_BUILD_ROOT%{_libdir} \
 	INSTALL_DOCDIR=$RPM_BUILD_ROOT%{_docdir} \
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir} \
 	INSTALL_BASEDIR=$RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} \
+	INSTALL_EXAMPLEDIR=$RPM_BUILD_ROOT%{_examplesdir}/%{name} \
 	CODPATH=$RPM_BUILD_ROOT%{_libdir}/%{name}/lexyacc
 
 ln -sf %{_libdir}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
@@ -189,6 +205,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}/lexyacc
 %{_libdir}/%{name}/%{version}/msg
 %{_libdir}/%{name}/%{version}/units
+%{_libdir}/%{name}/%{version}/ide
 %{_libdir}/%{name}/lexyacc/*
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
@@ -196,7 +213,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files examples
 %defattr(644,root,root,755)
-#%{_examplesdir}/fpc
+%{_examplesdir}/fpc
 
 %files doc
 %defattr(644,root,root,755)
