@@ -25,7 +25,7 @@ Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 #Source2:	%{name}-sample.cfg
 URL:		http://www.freepascal.org/
 #BuildRequires:	bin86
-BuildRequires:	zlib-devel
+#BuildRequires:	zlib-devel
 Requires:	gcc >= 2.95.2
 ExclusiveArch:	%{ix86} m68k amd64 ppc sparc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -87,6 +87,10 @@ tar xf %{SOURCE1}
 %ifarch amd64
 tar xf %{SOURCE2}
 %define _bname x64
+%endif
+%ifarch ppc
+tar xf %{SOURCE3}
+%define _bname ppc
 %endif
 
 tar xf binary.*-linux.tar
