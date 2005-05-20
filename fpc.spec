@@ -92,6 +92,10 @@ tar xf %{SOURCE2}
 tar xf %{SOURCE3}
 %define _bname ppc
 %endif
+%ifarch sparc
+tar xf %{SOURCE4}
+%define _bname sparc
+%endif
 
 tar xf binary.*-linux.tar
 
