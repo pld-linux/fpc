@@ -25,6 +25,7 @@ BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
 BuildRequires:	tetex-fonts-jknappen
 BuildRequires:	tetex-format-pdflatex
+BuildRequires:	tetex-metafont
 Requires:	binutils
 ExclusiveArch:	%{ix86} amd64 ppc sparc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
