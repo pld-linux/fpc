@@ -193,7 +193,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/*
-%doc faq.html install/doc/{copying*,*.txt}
+%doc faq.html install/doc/{copying*,*.txt} ide/readme.ide
 %config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
