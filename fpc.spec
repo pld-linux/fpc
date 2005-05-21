@@ -23,11 +23,12 @@ Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 URL:		http://www.freepascal.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
+BuildRequires:	rpmbuild(macros) >= 1.213
 BuildRequires:	tetex-fonts-jknappen
 BuildRequires:	tetex-format-pdflatex
 BuildRequires:	tetex-metafont
 Requires:	binutils
-ExclusiveArch:	%{ix86} amd64 ppc sparc
+ExclusiveArch:	%{ix86} %{x8664} ppc sparc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -58,7 +59,7 @@ FPC -- 32-¬¶‘Œ…  ÀœÕ–¶Ã—‘œ“ Pascal, ”’Õ¶”Œ…  ¶⁄ Turbo Pascal 7.0 ‘¡ Delphi.
 Summary:	Free Pascal Compiler exaple programs
 Summary(pl):	Przyk≥adowe programy do kompilatora Free Pascal
 Group:		Documentation
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description examples
 Free Pascal Compiler exaple programs.
@@ -70,7 +71,7 @@ Przyk≥adowe programy do kompilatora Free Pascal.
 Summary:	Free Pascal Compiler documentation
 Summary(pl):	Dokumentacja do kompilatora Free Pascal
 Group:		Documentation
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description doc
 Documentation for fpc in PDF format.
@@ -84,7 +85,7 @@ Dokumentacja do fpc w formacie PDF.
 tar xf %{SOURCE1}
 %define _bname 386
 %endif
-%ifarch amd64
+%ifarch %{x8664}
 tar xf %{SOURCE2}
 %define _bname x64
 %endif
