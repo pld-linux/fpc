@@ -1,4 +1,4 @@
-# TODO: 
+# TODO:
 # - check why it builds all static..
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
@@ -10,13 +10,13 @@ Release:	1
 License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
-Source0:	http://switch.dl.sourceforge.net/sourceforge/freepascal/%{name}-%{version}.source.tar.gz
+Source0:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.source.tar.gz
 # Source0-md5:	3f9c64d0146a3631f6963fd7477776d1
-Source1:	http://dl.sourceforge.net/freepascal/fpc-%{version}.i386-linux.tar
+Source1:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.i386-linux.tar
 # Source1-md5:	5f0a5fba632a811dcfdafe0ff80476a3
-Source2:	http://dl.sourceforge.net/freepascal/fpc-%{version}.x86_64-linux.tar
+Source2:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.x86_64-linux.tar
 # Source2-md5:	36270de604c6b5ad3af8aaa08143e88f
-Source3:	http://dl.sourceforge.net/freepascal/fpc-%{version}.powerpc-linux.tar
+Source3:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.powerpc-linux.tar
 # Source3-md5:	7019384e09411902e530dfe55d4ff145
 Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
@@ -46,14 +46,16 @@ kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal rСwnie©
 rozszerza te jЙzyki elementami takimi jak przeci╠©anie funkcji.
 
 %description -l ru
-FPC -- 32-битный компилятор Pascal, совместимый с Turbo Pascal 7.0 и Delphi.
-Поставляется с RTL (библиотекой времени исполнения), FCL (библиотекой свободных
-компонент), интерфейсами к gtk, ncurses, zlib, mysql, postgres, ibase.
+FPC -- 32-битный компилятор Pascal, совместимый с Turbo Pascal 7.0 и
+Delphi. Поставляется с RTL (библиотекой времени исполнения), FCL
+(библиотекой свободных компонент), интерфейсами к gtk, ncurses, zlib,
+mysql, postgres, ibase.
 
 %description -l uk
-FPC -- 32-б╕тний комп╕лятор Pascal, сум╕сний ╕з Turbo Pascal 7.0 та Delphi.
-Постача╓ться ╕з RTL (б╕бл╕отекою часу виконання), FCL (б╕бл╕отекою в╕льних
-компонент), ╕нтерфейсами до gtk, ncurses, zlib, mysql, postgres, ibase.
+FPC -- 32-б╕тний комп╕лятор Pascal, сум╕сний ╕з Turbo Pascal 7.0 та
+Delphi. Постача╓ться ╕з RTL (б╕бл╕отекою часу виконання), FCL
+(б╕бл╕отекою в╕льних компонент), ╕нтерфейсами до gtk, ncurses, zlib,
+mysql, postgres, ibase.
 
 %package examples
 Summary:	Free Pascal Compiler exaple programs
@@ -195,7 +197,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/*
 %doc faq.html install/doc/{copying*,*.txt} ide/readme.ide
-%config(noreplace) %verify(not md5 size mtime) %{_sysconfdir}/fpc.cfg
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fpc.cfg
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
 %dir %{_libdir}/%{name}/lexyacc
