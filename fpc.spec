@@ -1,12 +1,13 @@
 # TODO:
 # - check why it builds all static..
+# - doesn't build on ppc/sparc :/ hgw why
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
 Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	2.0.2
-Release:	1
+Release:	0.1
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.bz2
