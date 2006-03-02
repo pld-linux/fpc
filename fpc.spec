@@ -7,7 +7,7 @@ Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	2.0.2
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.bz2
@@ -16,9 +16,6 @@ URL:		http://www.freepascal.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
-BuildRequires:	tetex-fonts-jknappen
-BuildRequires:	tetex-format-pdflatex
-BuildRequires:	tetex-metafont
 BuildRequires:	fpc
 Provides:	fpc-bootstrap
 Requires:	binutils
@@ -51,6 +48,19 @@ Delphi. Постача╓ться ╕з RTL (б╕бл╕отекою часу виконання), FCL
 (б╕бл╕отекою в╕льних компонент), ╕нтерфейсами до gtk, ncurses, zlib,
 mysql, postgres, ibase.
 
+%package src
+Summary:	Free Pascal Compiler source files
+Summary(pl):	Pliki ╪rСdЁowe kompilatora Free Pascal
+Group:		Development
+Provides:	fpcsrc
+Requires:	%{name} = %{version}-%{release}
+
+%description src
+Free Pascal Compiler source files.
+
+%description src -l pl
+Pliki ╪rСdЁowe kompilatora Free Pascal.
+
 %package examples
 Summary:	Free Pascal Compiler exaple programs
 Summary(pl):	PrzykЁadowe programy do kompilatora Free Pascal
@@ -79,6 +89,10 @@ PrzykЁadowe programy do kompilatora Free Pascal.
 %endif
 
 %build
+# save for fpc-src
+install -d fpc-src
+cp -af fpcsrc/* fpc-src
+
 PP=%{_bindir}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/fpdoc
@@ -122,7 +136,9 @@ esac
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_examplesdir}/fpc}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_datadir}/fpcsrc,%{_examplesdir}/fpc}
+
+cp -af fpc-src/* $RPM_BUILD_ROOT%{_datadir}/fpcsrc
 
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
@@ -171,6 +187,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
 %{_mandir}/man*/*
+
+%files src
+%defattr(644,root,root,755)
+%{_datadir}/fpcsrc
 
 %files examples
 %defattr(644,root,root,755)
