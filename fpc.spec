@@ -16,7 +16,7 @@ URL:		http://www.freepascal.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
-BuildRequires:	fpc
+BuildRequires:	fpc >= 2.0.0
 Provides:	fpc-bootstrap
 Requires:	binutils
 ExclusiveArch:	%{ix86} %{x8664} ppc sparc
