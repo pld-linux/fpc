@@ -6,7 +6,7 @@ Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	2.0.0
-Release:	1
+Release:	2
 License:	GPL
 Group:		Development/Languages
 Vendor:		Michael Van Canneyt <michael@tfdec1.fys.kuleuven.ac.be>
@@ -20,6 +20,7 @@ Source3:	http://dl.sourceforge.net/freepascal/fpc-%{version}.powerpc-linux.tar
 # Source3-md5:	7019384e09411902e530dfe55d4ff145
 Source4:	http://dl.sourceforge.net/freepascal/%{name}-%{version}.sparc-linux.tar
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
+Patch0:		%{name}-skip-dev-dot.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
@@ -96,6 +97,7 @@ tar xf %{SOURCE3}
 tar xf %{SOURCE4}
 %define _bname sparc
 %endif
+%patch0 -p1
 
 tar xf binary.*-linux.tar
 
