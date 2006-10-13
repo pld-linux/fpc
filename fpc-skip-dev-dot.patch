@@ -1,0 +1,12 @@
+--- fpc/rtl/unix/ttyname.inc~	2005-02-14 18:13:31.000000000 +0100
++++ fpc/rtl/unix/ttyname.inc	2006-10-13 18:56:54.686466592 +0200
+@@ -44,8 +44,7 @@
+        if fpstat(name,st)=0 then
+         begin
+           if (fpS_ISDIR(st.st_mode)) and  { if it is a directory }
+-             (strpas(@(d^.d_name))<>'.') and    { but not ., .. and fd subdirs }
+-             (strpas(@(d^.d_name))<>'..') and
++             (strpas(@(d^.d_name))[1]<>'.') and { but not ., .. and fd subdirs }
+              (strpas(@(d^.d_name))<>'') and
+              (strpas(@(d^.d_name))<>'fd') then
+            begin                      {we found a directory, search inside it}
