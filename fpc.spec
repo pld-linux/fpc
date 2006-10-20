@@ -7,7 +7,7 @@ Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	2.0.4
-Release:	0.4
+Release:	1
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
