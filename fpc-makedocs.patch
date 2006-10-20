@@ -1,0 +1,17 @@
+--- fpcbuild_2.0.4_exp/fpcdocs/Makefile~	2006-10-20 16:19:03.000000000 +0200
++++ fpcbuild_2.0.4_exp/fpcdocs/Makefile	2006-10-20 16:39:38.000000000 +0200
+@@ -1815,10 +1815,10 @@
+ messages.inc: $(FPCSRCDIR)/compiler/msg2inc$(EXEEXT) $(FPCSRCDIR)/compiler/msg/errore.msg
+ 	$(FPCSRCDIR)/compiler/msg2inc -TE $(FPCSRCDIR)/compiler/msg/errore.msg messages.inc
+ comphelp.inc:
+-	echo "% Automatically generated. Do not edit" > comphelp.inc
+-	echo "\begin{verbatim}" >> comphelp.inc
+-	fpc -h >>comphelp.inc
+-	echo "\end{verbatim}" >> comphelp.inc
++	/bin/echo "% Automatically generated. Do not edit" > comphelp.inc
++	/bin/echo "\begin{verbatim}" >> comphelp.inc
++	$(FPC) -h | sed -e s,$(FPC),fpc, >>comphelp.inc
++	/bin/echo "\end{verbatim}" >> comphelp.inc
+ syntax.sty: styles/syntax.sty
+ 	cp $(wildcard styles/*.sty) .
+ INCLUDES=date.inc syntax.sty
