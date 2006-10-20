@@ -105,18 +105,22 @@ Dokumentacja do fpc w formacie PDF.
 %patch1 -p1
 %ifarch %{ix86}
 tar xf %{SOURCE1}
+%define _bver %{version}
 %define _bname 386
 %endif
 %ifarch %{x8664}
 tar xf %{SOURCE2}
+%define _bver %{version}
 %define _bname x64
 %endif
 %ifarch ppc
 tar xf %{SOURCE3}
+%define _bver %{version}
 %define _bname ppc
 %endif
 %ifarch sparc
 tar xf %{SOURCE4}
+%define _bver 2.0.0
 %define _bname sparc
 %endif
 
@@ -127,14 +131,14 @@ cd bin
 for i in ../*.tar.gz ; do
 	tar xzf $i
 done
-ln -sf `pwd`/lib/%{name}/%{version}/ppc* bin
+ln -sf `pwd`/lib/%{name}/%{_bver}/ppc* bin
 
 %build
 # save for fpc-src
 install -d fpc-src
 cp -af fpcsrc/* fpc-src
 
-PP=`pwd`/bin/lib/%{name}/%{version}/ppc%{_bname}
+PP=`pwd`/bin/lib/%{name}/%{_bver}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/fpdoc
 
