@@ -27,10 +27,10 @@ URL:		http://www.freepascal.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
-BuildRequires:  tetex-fonts-jknappen
-BuildRequires:  tetex-format-pdflatex
+BuildRequires:	tetex-fonts-jknappen
+BuildRequires:	tetex-format-pdflatex
 BuildRequires:	tetex-makeindex
-BuildRequires:  tetex-metafont
+BuildRequires:	tetex-metafont
 Provides:	fpc-bootstrap
 Requires:	binutils
 ExclusiveArch:	%{ix86} %{x8664} ppc sparc
