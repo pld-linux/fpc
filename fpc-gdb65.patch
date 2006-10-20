@@ -1,0 +1,40 @@
+--- fpcbuild_2.0.4_exp/fpcsrc/packages/base/gdbint/gdbint.pp~	2006-07-30 13:02:06.000000000 +0200
++++ fpcbuild_2.0.4_exp/fpcsrc/packages/base/gdbint/gdbint.pp	2006-10-20 20:45:42.042128766 +0200
+@@ -34,6 +34,10 @@
+   {$define GDB_V6}
+ {$endif def GDB_V604}
+ 
++{$ifdef GDB_V605}
++  {$define GDB_V6}
++{$endif def GDB_V605}
++
+ 
+ {$ifdef GDB_V6}
+   {$define GDB_HAS_SYSROOT}
+--- fpcbuild_2.0.4_exp/fpcsrc/packages/base/gdbint/gdbint.pp~	2006-10-20 20:47:50.483467953 +0200
++++ fpcbuild_2.0.4_exp/fpcsrc/packages/base/gdbint/gdbint.pp	2006-10-20 20:53:38.618579164 +0200
+@@ -2369,9 +2369,11 @@
+   version : array[0..0] of char;cvar;external;
+ 
+ {$ifndef GDB_V604}
++{$ifndef GDB_V605}
+ // doesn't seem to exist anymore. Seems to work fine without
+ procedure error_init;cdecl;external;
+ {$endif}
++{$endif}
+ 
+ function  GDBVersion : string;
+ begin
+--- fpcbuild_2.0.4_exp/fpcsrc/packages/base/gdbint/gdbint.pp~	2006-10-20 20:56:13.897696959 +0200
++++ fpcbuild_2.0.4_exp/fpcsrc/packages/base/gdbint/gdbint.pp	2006-10-20 20:59:27.565632486 +0200
+@@ -2428,8 +2428,10 @@
+   set_ui_file_write(gdb_stdout,@gdbint_ui_file_write);
+   set_ui_file_write(gdb_stderr,@gdbint_ui_file_write);
+ {$ifndef GDB_V604}
++{$ifndef GDB_V605}
+   error_init;
+ {$endif}
++{$endif}
+ {$ifdef GDB_V6}
+ //  gdb_stdtargin := gdb_stdin;
+   gdb_stdtargerr := gdb_stderr;
