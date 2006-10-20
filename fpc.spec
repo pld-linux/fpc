@@ -7,7 +7,7 @@ Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	2.0.4
-Release:	0.1
+Release:	0.4
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
@@ -23,8 +23,11 @@ Source4:	ftp://ftp.freepascal.org/pub/fpc/dist/sparc-linux-2.0.0/%{name}-2.0.0.s
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-makedocs.patch
+Patch2:		%{name}-gdb65.patch
 URL:		http://www.freepascal.org/
+BuildRequires:	binutils-static >= 2.17.50
 BuildRequires:	ncurses-devel
+BuildRequires:	gdb-lib
 BuildRequires:	gpm-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
 BuildRequires:	tetex-fonts-jknappen
@@ -103,6 +106,7 @@ Dokumentacja do fpc w formacie PDF.
 %setup -q -n %{name}build_%{version}_exp
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %ifarch %{ix86}
 tar xf %{SOURCE1}
 %define _bver %{version}
@@ -167,6 +171,7 @@ esac
 	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
+	GDBLIBDIR=%{_libdir} \
 	PP="$NEWPP" \
 	FPC="$NEWPP" \
 	DATA2INC=`pwd`/utils/data2inc \
