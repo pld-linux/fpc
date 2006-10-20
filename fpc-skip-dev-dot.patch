@@ -1,5 +1,5 @@
---- fpc/rtl/unix/ttyname.inc~	2005-02-14 18:13:31.000000000 +0100
-+++ fpc/rtl/unix/ttyname.inc	2006-10-13 18:56:54.686466592 +0200
+--- fpc/fpcsrc/rtl/unix/ttyname.inc~	2005-02-14 18:13:31.000000000 +0100
++++ fpc/fpcsrc/rtl/unix/ttyname.inc	2006-10-13 18:56:54.686466592 +0200
 @@ -44,8 +44,7 @@
         if fpstat(name,st)=0 then
          begin
