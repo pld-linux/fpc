@@ -6,17 +6,31 @@ Summary(pl):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru):	ó×ÏÂÏÄÎÙÊ ËÏÍÐÉÌÑÔÏÒ Pascal
 Summary(uk):	÷¦ÌØÎÉÊ ËÏÍÐ¦ÌÑÔÏÒ Pascal
 Name:		fpc
-Version:	2.0.2
-Release:	0.2
+Version:	2.0.4
+Release:	0.1
 License:	GPL
 Group:		Development/Languages
-Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.bz2
-# Source0-md5:	b88893bc005c4404197ae55ef3c0de30
+Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
+# Source0-md5:	1ff8b80d1f5f564983bb4e1550b8b53a
+Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/i386-linux-%{version}/%{name}-%{version}.i386-linux.tar
+# Source1-md5:	d826aab69c98b9efe30398ff63e4c9d9
+Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/x86_64-linux-%{version}/%{name}-%{version}.x86_64-linux.tar
+# Source2-md5:	3bbfe4c061ebd40502789eccef069d7c
+Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/powerpc-linux-%{version}/%{name}-%{version}.powerpc-linux.tar
+# Source3-md5:	6ec5302fe446d94e5aaa1e159b0d65df
+# no 2.0.4 binary for sparc, 2.0.0 only
+Source4:	ftp://ftp.freepascal.org/pub/fpc/dist/sparc-linux-2.0.0/%{name}-2.0.0.sparc-linux.tar
+# Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
+Patch0:		%{name}-skip-dev-dot.patch
+Patch1:		%{name}-makedocs.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	gpm-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
-BuildRequires:	fpc >= 2.0.0
+BuildRequires:  tetex-fonts-jknappen
+BuildRequires:  tetex-format-pdflatex
+BuildRequires:	tetex-makeindex
+BuildRequires:  tetex-metafont
 Provides:	fpc-bootstrap
 Requires:	binutils
 ExclusiveArch:	%{ix86} %{x8664} ppc sparc
@@ -73,27 +87,54 @@ Free Pascal Compiler exaple programs.
 %description examples -l pl
 Przyk³adowe programy do kompilatora Free Pascal.
 
+%package doc
+Summary:	Free Pascal Compiler documentation
+Summary(pl):	Dokumentacja do kompilatora Free Pascal
+Group:		Documentation
+Requires:	%{name} = %{version}
+
+%description doc
+Documentation for fpc in PDF format.
+
+%description doc -l pl
+Dokumentacja do fpc w formacie PDF.
+
 %prep
-%setup -q -n %{name}-src-%{version}
+%setup -q -n %{name}build_%{version}_exp
+%patch0 -p1
+%patch1 -p1
 %ifarch %{ix86}
+tar xf %{SOURCE1}
 %define _bname 386
 %endif
 %ifarch %{x8664}
+tar xf %{SOURCE2}
 %define _bname x64
 %endif
 %ifarch ppc
+tar xf %{SOURCE3}
 %define _bname ppc
 %endif
 %ifarch sparc
+tar xf %{SOURCE4}
 %define _bname sparc
 %endif
+
+tar xf binary.*-linux.tar
+
+mkdir bin
+cd bin
+for i in ../*.tar.gz ; do
+	tar xzf $i
+done
+ln -sf `pwd`/lib/%{name}/%{version}/ppc* bin
 
 %build
 # save for fpc-src
 install -d fpc-src
 cp -af fpcsrc/* fpc-src
 
-PP=%{_bindir}/ppc%{_bname}
+PP=`pwd`/bin/lib/%{name}/%{version}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/fpdoc
 
@@ -133,6 +174,12 @@ esac
 	packages_extra_smart \
 	ide_all \
 	utils_all
+
+export save_size=10000
+%{__make} -C fpcdocs \
+	FPDOC=$NEWFPDOC \
+	FPC="$NEWPP" \
+	pdf
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -195,3 +242,7 @@ rm -rf $RPM_BUILD_ROOT
 %files examples
 %defattr(644,root,root,755)
 %{_examplesdir}/fpc
+
+%files doc
+%defattr(644,root,root,755)
+%doc fpcdocs/*.pdf
