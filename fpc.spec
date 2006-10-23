@@ -7,7 +7,7 @@ Summary(ru):	Свободный компилятор Pascal
 Summary(uk):	В╕льний комп╕лятор Pascal
 Name:		fpc
 Version:	2.0.4
-Release:	1
+Release:	2
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
@@ -24,6 +24,7 @@ Source4:	ftp://ftp.freepascal.org/pub/fpc/dist/sparc-linux-2.0.0/%{name}-2.0.0.s
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-makedocs.patch
 Patch2:		%{name}-gdb65.patch
+Patch3:		%{name}-avoid-RE.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 2.17.50
 BuildRequires:	ncurses-devel
@@ -107,6 +108,7 @@ Dokumentacja do fpc w formacie PDF.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %ifarch %{ix86}
 tar xf %{SOURCE1}
 %define _bver %{version}
