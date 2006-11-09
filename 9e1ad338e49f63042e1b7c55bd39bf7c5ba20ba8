@@ -1,0 +1,3 @@
+- BR: zlib-devel
+  NOTE: It doesn't build without glibc-static (patch1 doesn't work), please
+  someone correct this (I don't know how).
