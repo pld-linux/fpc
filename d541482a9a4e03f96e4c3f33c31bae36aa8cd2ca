@@ -1,0 +1,2 @@
+- fixed %files in doc subpackage
+- DON'T move files in %install form build dir to build root!!!
