@@ -27,16 +27,16 @@ Patch2:		%{name}-gdb65.patch
 Patch3:		%{name}-avoid-RE.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 2.17.50
-BuildRequires:	ncurses-devel
 BuildRequires:	gdb-lib
 BuildRequires:	gpm-devel
+BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
 BuildRequires:	tetex-fonts-jknappen
 BuildRequires:	tetex-format-pdflatex
 BuildRequires:	tetex-makeindex
 BuildRequires:	tetex-metafont
-Provides:	fpc-bootstrap
 Requires:	binutils
+Provides:	fpc-bootstrap
 ExclusiveArch:	%{ix86} %{x8664} ppc sparc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -70,8 +70,8 @@ mysql, postgres, ibase.
 Summary:	Free Pascal Compiler source files
 Summary(pl):	Pliki ¼ród³owe kompilatora Free Pascal
 Group:		Development
-Provides:	fpcsrc
 Requires:	%{name} = %{version}-%{release}
+Provides:	fpcsrc
 
 %description src
 Free Pascal Compiler source files.
@@ -95,7 +95,7 @@ Przyk³adowe programy do kompilatora Free Pascal.
 Summary:	Free Pascal Compiler documentation
 Summary(pl):	Dokumentacja do kompilatora Free Pascal
 Group:		Documentation
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description doc
 Documentation for fpc in PDF format.
