@@ -26,7 +26,7 @@ Patch1:		%{name}-makedocs.patch
 Patch2:		%{name}-gdb65.patch
 Patch3:		%{name}-avoid-RE.patch
 URL:		http://www.freepascal.org/
-BuildRequires:	binutils-static >= 2.17.50
+BuildRequires:	binutils-static >= 3:2.17.50
 BuildRequires:	gdb-lib
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
