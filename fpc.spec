@@ -2,9 +2,9 @@
 # - check why it builds all static..
 # - doesn't build on ppc/sparc :/ hgw why
 Summary:	32-bit compiler for the i386 and m68k processors
-Summary(pl):	32 bitowy kompilator dla procesorСw i386 i m68k
-Summary(ru):	Свободный компилятор Pascal
-Summary(uk):	В╕льний комп╕лятор Pascal
+Summary(pl.UTF-8):   32 bitowy kompilator dla procesorцЁw i386 i m68k
+Summary(ru.UTF-8):   п║п╡п╬п╠п╬п╢п╫я▀п╧ п╨п╬п╪п©п╦п╩я▐я┌п╬я─ Pascal
+Summary(uk.UTF-8):   п▓я√п╩я▄п╫п╦п╧ п╨п╬п╪п©я√п╩я▐я┌п╬я─ Pascal
 Name:		fpc
 Version:	2.0.4
 Release:	2
@@ -48,27 +48,27 @@ attained), but it also enhances these languages with elements like
 function overloading. And, unlike these ancestors, it supports
 multiple platforms.
 
-%description -l pl
-Free Pascal to 32 bitowy kompilator dla procesorСw i386 oraz m86k.
-Free Pascal zostaЁ zaprojektowany by byФ (jak tylko to mo©liwe)
-kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal rСwnie©
-rozszerza te jЙzyki elementami takimi jak przeci╠©anie funkcji.
+%description -l pl.UTF-8
+Free Pascal to 32 bitowy kompilator dla procesorцЁw i386 oraz m86k.
+Free Pascal zostaе┌ zaprojektowany by byд┤ (jak tylko to moе╪liwe)
+kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal rцЁwnieе╪
+rozszerza te jд≥zyki elementami takimi jak przeciд┘е╪anie funkcji.
 
-%description -l ru
-FPC -- 32-битный компилятор Pascal, совместимый с Turbo Pascal 7.0 и
-Delphi. Поставляется с RTL (библиотекой времени исполнения), FCL
-(библиотекой свободных компонент), интерфейсами к gtk, ncurses, zlib,
+%description -l ru.UTF-8
+FPC -- 32-п╠п╦я┌п╫я▀п╧ п╨п╬п╪п©п╦п╩я▐я┌п╬я─ Pascal, я│п╬п╡п╪п╣я│я┌п╦п╪я▀п╧ я│ Turbo Pascal 7.0 п╦
+Delphi. п÷п╬я│я┌п╟п╡п╩я▐п╣я┌я│я▐ я│ RTL (п╠п╦п╠п╩п╦п╬я┌п╣п╨п╬п╧ п╡я─п╣п╪п╣п╫п╦ п╦я│п©п╬п╩п╫п╣п╫п╦я▐), FCL
+(п╠п╦п╠п╩п╦п╬я┌п╣п╨п╬п╧ я│п╡п╬п╠п╬п╢п╫я▀я┘ п╨п╬п╪п©п╬п╫п╣п╫я┌), п╦п╫я┌п╣я─я└п╣п╧я│п╟п╪п╦ п╨ gtk, ncurses, zlib,
 mysql, postgres, ibase.
 
-%description -l uk
-FPC -- 32-б╕тний комп╕лятор Pascal, сум╕сний ╕з Turbo Pascal 7.0 та
-Delphi. Постача╓ться ╕з RTL (б╕бл╕отекою часу виконання), FCL
-(б╕бл╕отекою в╕льних компонент), ╕нтерфейсами до gtk, ncurses, zlib,
+%description -l uk.UTF-8
+FPC -- 32-п╠я√я┌п╫п╦п╧ п╨п╬п╪п©я√п╩я▐я┌п╬я─ Pascal, я│я┐п╪я√я│п╫п╦п╧ я√п╥ Turbo Pascal 7.0 я┌п╟
+Delphi. п÷п╬я│я┌п╟я┤п╟я■я┌я▄я│я▐ я√п╥ RTL (п╠я√п╠п╩я√п╬я┌п╣п╨п╬я▌ я┤п╟я│я┐ п╡п╦п╨п╬п╫п╟п╫п╫я▐), FCL
+(п╠я√п╠п╩я√п╬я┌п╣п╨п╬я▌ п╡я√п╩я▄п╫п╦я┘ п╨п╬п╪п©п╬п╫п╣п╫я┌), я√п╫я┌п╣я─я└п╣п╧я│п╟п╪п╦ п╢п╬ gtk, ncurses, zlib,
 mysql, postgres, ibase.
 
 %package src
 Summary:	Free Pascal Compiler source files
-Summary(pl):	Pliki ╪rСdЁowe kompilatora Free Pascal
+Summary(pl.UTF-8):   Pliki е╨rцЁdе┌owe kompilatora Free Pascal
 Group:		Development
 Requires:	%{name} = %{version}-%{release}
 Provides:	fpcsrc
@@ -76,31 +76,31 @@ Provides:	fpcsrc
 %description src
 Free Pascal Compiler source files.
 
-%description src -l pl
-Pliki ╪rСdЁowe kompilatora Free Pascal.
+%description src -l pl.UTF-8
+Pliki е╨rцЁdе┌owe kompilatora Free Pascal.
 
 %package examples
 Summary:	Free Pascal Compiler exaple programs
-Summary(pl):	PrzykЁadowe programy do kompilatora Free Pascal
+Summary(pl.UTF-8):   Przykе┌adowe programy do kompilatora Free Pascal
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
 
 %description examples
 Free Pascal Compiler exaple programs.
 
-%description examples -l pl
-PrzykЁadowe programy do kompilatora Free Pascal.
+%description examples -l pl.UTF-8
+Przykе┌adowe programy do kompilatora Free Pascal.
 
 %package doc
 Summary:	Free Pascal Compiler documentation
-Summary(pl):	Dokumentacja do kompilatora Free Pascal
+Summary(pl.UTF-8):   Dokumentacja do kompilatora Free Pascal
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
 
 %description doc
 Documentation for fpc in PDF format.
 
-%description doc -l pl
+%description doc -l pl.UTF-8
 Dokumentacja do fpc w formacie PDF.
 
 %prep
