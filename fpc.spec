@@ -2,9 +2,9 @@
 # - check why it builds all static..
 # - doesn't build on ppc/sparc :/ hgw why
 Summary:	32-bit compiler for the i386 and m68k processors
-Summary(pl.UTF-8):   32 bitowy kompilator dla procesorów i386 i m68k
-Summary(ru.UTF-8):   Свободный компилятор Pascal
-Summary(uk.UTF-8):   Вільний компілятор Pascal
+Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
+Summary(ru.UTF-8):	Свободный компилятор Pascal
+Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
 Version:	2.0.4
 Release:	2
@@ -68,7 +68,7 @@ mysql, postgres, ibase.
 
 %package src
 Summary:	Free Pascal Compiler source files
-Summary(pl.UTF-8):   Pliki źródłowe kompilatora Free Pascal
+Summary(pl.UTF-8):	Pliki źródłowe kompilatora Free Pascal
 Group:		Development
 Requires:	%{name} = %{version}-%{release}
 Provides:	fpcsrc
@@ -81,7 +81,7 @@ Pliki źródłowe kompilatora Free Pascal.
 
 %package examples
 Summary:	Free Pascal Compiler exaple programs
-Summary(pl.UTF-8):   Przykładowe programy do kompilatora Free Pascal
+Summary(pl.UTF-8):	Przykładowe programy do kompilatora Free Pascal
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
 
@@ -93,7 +93,7 @@ Przykładowe programy do kompilatora Free Pascal.
 
 %package doc
 Summary:	Free Pascal Compiler documentation
-Summary(pl.UTF-8):   Dokumentacja do kompilatora Free Pascal
+Summary(pl.UTF-8):	Dokumentacja do kompilatora Free Pascal
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
 
