@@ -1,6 +1,5 @@
 # TODO:
 # - check why it builds all static..
-# - doesn't build on ppc :/ hgw why - drop this ?
 # - repair ide build
 #
 # Conditional build:
@@ -13,7 +12,7 @@ Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
 Version:	2.2.2
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
