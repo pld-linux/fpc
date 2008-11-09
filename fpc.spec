@@ -1,40 +1,47 @@
 # TODO:
 # - check why it builds all static..
-# - doesn't build on ppc/sparc :/ hgw why
+# - doesn't build on ppc/sparc :/ hgw why - drop this ?
+# - repair ide build
+#
+# Conditional build:
+%bcond_with	ide			# build with ide
+%bcond_without	doc			# build without doc
+
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.0.4
-Release:	2
+Version:	2.2.2
+Release:	0.1
 License:	GPL
 Group:		Development/Languages
-Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
-# Source0-md5:	1ff8b80d1f5f564983bb4e1550b8b53a
-Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/i386-linux-%{version}/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	d826aab69c98b9efe30398ff63e4c9d9
-Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/x86_64-linux-%{version}/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	3bbfe4c061ebd40502789eccef069d7c
-Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/powerpc-linux-%{version}/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	6ec5302fe446d94e5aaa1e159b0d65df
+Source0:	ftp://ftp.freepascal.org/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
+# Source0-md5:	ec3d463ec9859da4122e9edfa2ab992d
+Source1:	ftp://ftp.freepascal.org/fpc/dist/i386-linux-%{version}/%{name}-%{version}.i386-linux.tar
+# Source1-md5:	ee7ddbf3ad50f6c6f237439e3ecd83d6
+Source2:	ftp://ftp.freepascal.org/fpc/dist/x86_64-linux-%{version}/%{name}-%{version}.x86_64-linux.tar
+# Source2-md5:	9671bb9f89fd64fd8db4de6c76393c62
+Source3:	ftp://ftp.freepascal.org/fpc/dist/powerpc-linux-%{version}/%{name}-%{version}.powerpc-linux.tar
+# Source3-md5:	e83013af5e6fd8272c6d26b41234f288
 # no 2.0.4 binary for sparc, 2.0.0 only
-Source4:	ftp://ftp.freepascal.org/pub/fpc/dist/sparc-linux-2.0.0/%{name}-2.0.0.sparc-linux.tar
+#Source4:	ftp://ftp.freepascal.org/fpc/dist/sparc-linux-2.0.0/%{name}-2.0.0.sparc-linux.tar
+#ftp://ftp.freepascal.org/fpc/dist/sparc-linux-2.2.2/deb/fpc_2.2.2-0.tar.gz
 # Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-makedocs.patch
-Patch2:		%{name}-gdb65.patch
-Patch3:		%{name}-avoid-RE.patch
+Patch2:		%{name}-avoid-RE.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
 BuildRequires:	gdb-lib
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
+%{?with_ide:BuildRequires:	readline-static}
 BuildRequires:	rpmbuild(macros) >= 1.213
-BuildRequires:	tetex-fonts-jknappen
-BuildRequires:	tetex-format-pdflatex
-BuildRequires:	tetex-makeindex
-BuildRequires:	tetex-metafont
+%{?with_doc:BuildRequires:	tetex-fonts-jknappen}
+%{?with_doc:BuildRequires:	tetex-format-pdflatex}
+%{?with_doc:BuildRequires:	tetex-makeindex}
+%{?with_doc:BuildRequires:	tetex-metafont}
 Requires:	binutils
 Provides:	fpc-bootstrap
 ExclusiveArch:	%{ix86} %{x8664} ppc sparc
@@ -104,11 +111,11 @@ Documentation for fpc in PDF format.
 Dokumentacja do fpc w formacie PDF.
 
 %prep
-%setup -q -n %{name}build_%{version}_exp
+%setup -q -n %{name}build-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
+
 %ifarch %{ix86}
 tar xf %{SOURCE1}
 %define _bver %{version}
@@ -150,14 +157,12 @@ NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/fpdoc
 
 # DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
 case "%{_build_cpu}" in
-	i386,i486)
-		OPTF="-OG2p1" ;;
-	i586)
-		OPTF="-OG2p2" ;;
-	i686,athlon)
-		OPTF="-Og2p3" ;;
-	*)
-		OPTF="-O2" ;;
+	i386) OPTF="-OG2p1" ;;
+	i486) OPTF="-OG2p1" ;;
+	i586) OPTF="-OG2p2" ;;
+	i686) OPTF="-Og2p3" ;;
+	athlon) OPTF="-Og2p3" ;;
+	*) OPTF="-O2" ;;
 esac
 
 %{__make} -C fpcsrc compiler_cycle \
@@ -167,7 +172,7 @@ esac
 	BININSTALLDIR=%{_bindir} \
 	PP="$PP" \
 	FPC="$PP" \
-	SMARTLINK=YES
+	LINKSMART=YES
 
 %{__make} -C fpcsrc OPT="$OPTF -Xs -n" \
 	RELEASE="1" \
@@ -176,21 +181,44 @@ esac
 	GDBLIBDIR=%{_libdir} \
 	PP="$NEWPP" \
 	FPC="$NEWPP" \
+	FPDOC=$NEWFPDOC \
 	DATA2INC=`pwd`/utils/data2inc \
-	SMARTLINK=YES \
-	rtl_clean rtl_smart \
-	packages_base_smart \
-	fcl_smart \
-	fv_smart \
-	packages_extra_smart \
-	ide_all \
-	utils_all
+	LINKSMART=YES \
+	NODOCS=YES \
+	rtl_clean \
+	packages_clean \
+	utils_clean \
+	%{?with_ide: ide_clean installer_clean} \
+	rtl_all \
+	packages_all \
+	utils_all %{?with_ide:installer_all}
 
+#	%{?with_ide:IDE=YES} \
+%if %{with ide}
+%{__make} -C fpcsrc/ide OPT="$OPTF -Xs -n" \
+	RELEASE="1" \
+	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
+	BININSTALLDIR=%{_bindir} \
+	GDBLIBDIR=%{_libdir} \
+	PP="$NEWPP" \
+	FPC="$NEWPP" \
+	FPDOC=$NEWFPDOC \
+	DATA2INC=`pwd`/utils/data2inc \
+	LINKSMART=YES \
+	clean \
+	default \
+	gdb
+%endif
+#	%{?with_ide:installer_clean} \
+#	%{?with_ide:installer_all}
+
+%if %{with doc}
 export save_size=10000
 %{__make} -C fpcdocs \
 	FPDOC=$NEWFPDOC \
 	FPC="$NEWPP" \
 	pdf
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -203,10 +231,8 @@ FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
 %{__make} -C fpcsrc \
 	compiler_distinstall \
 	rtl_distinstall \
-	fcl_distinstall \
-	fv_distinstall \
 	packages_distinstall \
-	ide_distinstall \
+	%{?with_ide:ide_distinstall} \
 	utils_distinstall \
 	PP="$NEWPP" \
 	FPCMAKE="$FPCMAKE" \
@@ -240,7 +266,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}/lexyacc
 %{_libdir}/%{name}/%{version}/msg
 %{_libdir}/%{name}/%{version}/units
+%if %{with ide}
 %{_libdir}/%{name}/%{version}/ide
+%endif
 %{_libdir}/%{name}/lexyacc/*
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
@@ -254,6 +282,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_examplesdir}/fpc
 
+%if %{with doc}
 %files doc
 %defattr(644,root,root,755)
 %doc fpcdocs/*.pdf
+%endif
