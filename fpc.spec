@@ -1,6 +1,6 @@
 # TODO:
 # - check why it builds all static..
-# - doesn't build on ppc/sparc :/ hgw why - drop this ?
+# - doesn't build on ppc :/ hgw why - drop this ?
 # - repair ide build
 #
 # Conditional build:
@@ -24,10 +24,6 @@ Source2:	ftp://ftp.freepascal.org/fpc/dist/x86_64-linux-%{version}/%{name}-%{ver
 # Source2-md5:	9671bb9f89fd64fd8db4de6c76393c62
 Source3:	ftp://ftp.freepascal.org/fpc/dist/powerpc-linux-%{version}/%{name}-%{version}.powerpc-linux.tar
 # Source3-md5:	e83013af5e6fd8272c6d26b41234f288
-# no 2.0.4 binary for sparc, 2.0.0 only
-#Source4:	ftp://ftp.freepascal.org/fpc/dist/sparc-linux-2.0.0/%{name}-2.0.0.sparc-linux.tar
-#ftp://ftp.freepascal.org/fpc/dist/sparc-linux-2.2.2/deb/fpc_2.2.2-0.tar.gz
-# Source4-md5:	dd8925ce8ce93309456c3072e6e4d14d
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-makedocs.patch
 Patch2:		%{name}-avoid-RE.patch
@@ -44,7 +40,7 @@ BuildRequires:	rpmbuild(macros) >= 1.213
 %{?with_doc:BuildRequires:	tetex-metafont}
 Requires:	binutils
 Provides:	fpc-bootstrap
-ExclusiveArch:	%{ix86} %{x8664} ppc sparc
+ExclusiveArch:	%{ix86} %{x8664} ppc
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -130,11 +126,6 @@ tar xf %{SOURCE2}
 tar xf %{SOURCE3}
 %define _bver %{version}
 %define _bname ppc
-%endif
-%ifarch sparc
-tar xf %{SOURCE4}
-%define _bver 2.0.0
-%define _bname sparc
 %endif
 
 tar xf binary.*-linux.tar
