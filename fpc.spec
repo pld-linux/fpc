@@ -11,21 +11,19 @@ Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.2.2
+Version:	2.2.4
 Release:	1
 License:	GPL
 Group:		Development/Languages
-Source0:	ftp://ftp.freepascal.org/fpc/dist/source-%{version}/%{name}build-%{version}.tar.gz
-# Source0-md5:	ec3d463ec9859da4122e9edfa2ab992d
-Source1:	ftp://ftp.freepascal.org/fpc/dist/i386-linux-%{version}/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	ee7ddbf3ad50f6c6f237439e3ecd83d6
-Source2:	ftp://ftp.freepascal.org/fpc/dist/x86_64-linux-%{version}/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	9671bb9f89fd64fd8db4de6c76393c62
-Source3:	ftp://ftp.freepascal.org/fpc/dist/powerpc-linux-%{version}/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	e83013af5e6fd8272c6d26b41234f288
+Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
+# Source0-md5:	20bb9a4a9f1449e2249c80d7aba7c245
+Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
+# Source1-md5:	dad8cb132bbefdc52b0f93e56484ea29
+Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
+# Source2-md5:	f1c523001cd842308d99b86d211368d2
+Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc64-linux/%{name}-%{version}.powerpc64-linux.tar
+# Source3-md5:	16649f2849b8871c9dfcfd070f2004d4
 Patch0:		%{name}-skip-dev-dot.patch
-Patch1:		%{name}-makedocs.patch
-Patch2:		%{name}-avoid-RE.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
 BuildRequires:	gdb-lib
@@ -97,7 +95,7 @@ Przykładowe programy do kompilatora Free Pascal.
 Summary:	Free Pascal Compiler documentation
 Summary(pl.UTF-8):	Dokumentacja do kompilatora Free Pascal
 Group:		Documentation
-Requires:	%{name} = %{version}-%{release}
+# doesn't require base
 
 %description doc
 Documentation for fpc in PDF format.
@@ -108,8 +106,6 @@ Dokumentacja do fpc w formacie PDF.
 %prep
 %setup -q -n %{name}build-%{version}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
