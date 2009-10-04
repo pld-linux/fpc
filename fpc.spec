@@ -21,8 +21,8 @@ Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{v
 # Source1-md5:	dad8cb132bbefdc52b0f93e56484ea29
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
 # Source2-md5:	f1c523001cd842308d99b86d211368d2
-Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc64-linux/%{name}-%{version}.powerpc64-linux.tar
-# Source3-md5:	16649f2849b8871c9dfcfd070f2004d4
+Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
+# Source3-md5:	7340cf98dc751d58d899c546bd46b972
 Patch0:		%{name}-skip-dev-dot.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
