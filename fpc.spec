@@ -11,18 +11,18 @@ Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.2.4
+Version:	2.4.0
 Release:	1
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	20bb9a4a9f1449e2249c80d7aba7c245
+# Source0-md5:	af49e9a8bb632f361395add30ece8934
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	dad8cb132bbefdc52b0f93e56484ea29
+# Source1-md5:	5f38071d4bc560425f08905c14c1a68c
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	f1c523001cd842308d99b86d211368d2
+# Source2-md5:	80fc3434f2d2af25af8c5e4dcf98723b
 Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	7340cf98dc751d58d899c546bd46b972
+# Source3-md5:	5a25c4d031e3f11d1d214c0d2faf00b5
 Patch0:		%{name}-skip-dev-dot.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
@@ -214,7 +214,7 @@ cp -af fpc-src/* $RPM_BUILD_ROOT%{_datadir}/fpcsrc
 
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
-%{__make} -C fpcsrc \
+%{__make} -j1 -C fpcsrc \
 	compiler_distinstall \
 	rtl_distinstall \
 	packages_distinstall \
@@ -233,7 +233,7 @@ FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir} \
 	CODPATH=$RPM_BUILD_ROOT%{_libdir}/%{name}/lexyacc
 
-%{__make} -C install/man installman \
+%{__make} -j1 -C install/man installman \
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir}
 
 ln -sf %{_libdir}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
