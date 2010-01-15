@@ -35,6 +35,7 @@ BuildRequires:	rpmbuild(macros) >= 1.213
 %{?with_doc:BuildRequires:	tetex-format-pdflatex}
 %{?with_doc:BuildRequires:	tetex-makeindex}
 %{?with_doc:BuildRequires:	tetex-metafont}
+%{?with_doc:BuildRequires:	texlive-xetex}
 Requires:	binutils
 Provides:	fpc-bootstrap
 ExclusiveArch:	%{ix86} %{x8664} ppc
@@ -200,7 +201,7 @@ esac
 
 %if %{with doc}
 export save_size=10000
-%{__make} -C fpcdocs \
+%{__make} -j1 -C fpcdocs \
 	FPDOC=$NEWFPDOC \
 	FPC="$NEWPP" \
 	pdf
