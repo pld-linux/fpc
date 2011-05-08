@@ -1,0 +1,218 @@
+--- fpcbuild-2.4.2/fpcsrc/utils/fpdoc/dw_latex.pp.orig	2010-03-24 22:13:33.000000000 +0100
++++ fpcbuild-2.4.2/fpcsrc/utils/fpdoc/dw_latex.pp	2011-05-08 02:43:06.000000000 +0200
+@@ -187,7 +187,9 @@
+   SetLength(Result, 0);
+   for i := 1 to Length(S) do
+     If not (S[i] in ['&','{','}','#','_','$','%','''','~','^', '\']) then
+-      Result := Result + S[i];
++      Result := Result + S[i]
++    else
++      Result:=result+'!'  
+ end;
+ 
+ 
+--- fpcbuild-2.4.2/fpcsrc/utils/fpdoc/dwlinear.pp.orig	2010-03-24 22:13:33.000000000 +0100
++++ fpcbuild-2.4.2/fpcsrc/utils/fpdoc/dwlinear.pp	2011-05-08 02:47:40.000000000 +0200
+@@ -14,10 +14,11 @@
+     FStream : TStream;
+     PackageName: String;
+     Module: TPasModule;
+-    ModuleName: String;
+     FLastURL : DomString;
+   private
++    FDupLinkedDoc: Boolean;
+   Protected
++    ModuleName: String;
+     // Writing support.
+     procedure Write(const s: String); virtual;
+     procedure WriteLn(const s: String); virtual;
+@@ -157,9 +158,8 @@
+ end;
+ 
+ procedure TLinearWriter.DescrWriteText(const AText: DOMString);
+-
+ begin
+-  self.Write(EscapeText(AText));
++  Write(EscapeText(AText));
+ end;
+ 
+ Function TLinearWriter.GetDescrString(AContext: TPasElement; DescrNode: TDOMElement) : String;
+@@ -368,6 +368,10 @@
+       StartSubSection(SDocVersion);
+       WriteDescr(ClassDecl,DocNode.Version);
+       end;
++    if Assigned(DocNode.SeeAlso) then
++    begin
++      WriteSeeAlso(DocNode);
++    end;
+   end;
+ 
+   // Write method overview
+@@ -413,7 +417,7 @@
+   L,N,S,A: String;
+   DocNode: TDocNode;
+   List : TStringList;
+-
++  lNode: TDocNode;
+ begin
+   // Write property overview
+   List:=TStringList.Create;
+@@ -437,10 +441,20 @@
+         L:=StripText(GetLabel(Member));
+         N:=EscapeText(Member.Name);
+         DocNode := Engine.FindDocNode(Member);
+-        If Assigned(DocNode) then
+-          S:=GetDescrString(Member, DocNode.ShortDescr)
++        if Assigned(DocNode) then
++        begin
++          if FDupLinkedDoc and (DocNode.Link <> '') then
++          begin
++            lNode := Engine.FindLinkedNode(DocNode);
++            if not Assigned(lNode) then
++              lNode := DocNode;
++          end
++          else
++            lNode := DocNode;
++          S := GetDescrString(Member, lNode.ShortDescr);
++        end
+         else
+-          S:='';
++          S := '';
+ 
+         A:='';
+         if Length(TPasProperty(Member).ReadAccessorName) > 0 then
+@@ -450,6 +464,7 @@
+         if Length(TPasProperty(Member).StoredAccessorName) > 0 then
+           a := a + 's';
+         WriteOverviewMember(L,N,A,S);
++        S := '';
+         end;
+       EndOverview;
+       end;
+@@ -562,7 +577,7 @@
+     begin
+       ResStrDecl := TPasResString(ASection.ResStrings[i]);
+       StartListing(false, '');
+-      Writeln(ResStrDecl.GetDeclaration(True));
++      DescrWriteText(ResStrDecl.GetDeclaration(True)); // instead of WriteLn() so we can do further processing like manual line wrapping in descendants
+       EndListing;
+       WriteLabel(ResStrDecl);
+       WriteIndex(ResStrDecl);
+@@ -668,6 +683,7 @@
+       SubNode:=SubNode.NextSibling;
+       end;
+     end;
++  WriteExample(Node);
+ end;
+ 
+ procedure TLinearWriter.WriteConsts(ASection: TPasSection);
+@@ -856,7 +872,7 @@
+         StartDescription;
+         WriteDescr(ProcDecl);
+         end;
+-      if Assigned(DocNode.ErrorsDoc) then
++      if Assigned(DocNode.ErrorsDoc) and (DocNode.ErrorsDoc.HasChildNodes) then
+         begin
+         StartErrors;
+         WriteDescr(ProcDecl, DocNode.ErrorsDoc);
+@@ -869,7 +885,9 @@
+       WriteSeeAlso(DocNode);
+       EndProcedure;
+       WriteExample(DocNode);
+-      end;
++      end
++     else
++      EndProcedure;
+     end;
+ end;
+ 
+@@ -917,6 +935,7 @@
+ var
+   DocNode: TDocNode;
+   S: String;
++  lNode: TDocNode;
+ begin
+   With PropDecl do
+     begin
+@@ -925,11 +944,23 @@
+     WriteIndex(Parent.Name+'.'+Name);
+     StartProperty;
+     DocNode := Engine.FindDocNode(PropDecl);
+-    if Assigned(DocNode) and Assigned(DocNode.ShortDescr) then
++    if Assigned(DocNode) then
++    begin
++      if FDupLinkedDoc and (DocNode.Link <> '') then
+       begin
+-      StartSynopsis;
+-      WriteDescr(PropDecl, DocNode.ShortDescr);
++        lNode := Engine.FindLinkedNode(DocNode);
++        if not Assigned(lNode) then
++          lNode := DocNode;
++      end
++      else
++        lNode := DocNode;
++
++      if Assigned(lNode.ShortDescr) then
++      begin
++        StartSynopsis;
++        WriteDescr(PropDecl, lNode.ShortDescr);
+       end;
++    end;
+     StartDeclaration;
+     StartListing(False);
+     WriteLn('Property '+GetDeclaration(True));
+@@ -951,26 +982,28 @@
+       end;
+     Writeln(S);
+     if Assigned(DocNode) then
+-      begin
+-      if Assigned(DocNode.Descr) then
++    begin
++      if Assigned(lNode.Descr) then     // lNode will be assigned if DocNode exists
+         begin
+         StartDescription;
+-        WriteDescr(PropDecl);
++        WriteDescr(PropDecl, lNode);
+         end;
+-      if Assigned(DocNode.ErrorsDoc) then
++      if Assigned(lNode.ErrorsDoc) and (lNode.ErrorsDoc.HasChildNodes) then
+         begin
+         StartErrors;
+         WriteDescr(PropDecl, DocNode.ErrorsDoc);
+         end;
+-      if Assigned(DocNode.Version) then
++      if Assigned(lNode.Version) then
+         begin
+         StartVersion;
+-        WriteDescr(PropDecl, DocNode.Version);
++        WriteDescr(PropDecl, lNode.Version);
+         end;
+-      WriteSeeAlso(DocNode);
++      WriteSeeAlso(lNode);
++      EndProperty;
++      WriteExample(lNode);
++    end
++    else
+       EndProperty;
+-      WriteExample(DocNode);
+-      end;
+     end;
+ end;
+ 
+@@ -999,6 +1032,8 @@
+         Writeln(',');
+       S:=TDomElement(Node)['id'];
+       DescrBeginLink(S);
++      if Node.FirstChild <> nil then
++        s := Node.FirstChild.NodeValue;
+       Write(EscapeText(S));
+       DescrEndLink();
+       end;
+@@ -1203,6 +1238,7 @@
+   i: Integer;
+ begin
+   inherited ;
++  FDupLinkedDoc := False; // by default we don't duplicate linked element documentation
+ 
+   { Allocate labels for all elements for which we are going to create
+     documentation. This is needed for links to work correctly. }
