@@ -28,7 +28,7 @@ BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
 %if %{with ide}
-BuildRequires:	gdb-lib >= 7.2-6
+BuildRequires:	gdb-lib >= 7.2-7
 BuildRequires:	python-static
 BuildRequires:	readline-static
 BuildRequires:	zlib-static
