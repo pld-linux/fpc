@@ -23,7 +23,6 @@ Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%
 Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
 # Source3-md5:	cea93e5da48c45da3147236cba75dc76
 Patch0:		%{name}-skip-dev-dot.patch
-Patch1:		%{name}-fpdoc.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
 BuildRequires:	gdb-lib
@@ -107,7 +106,6 @@ Dokumentacja do fpc w formacie PDF.
 %prep
 %setup -q -n %{name}build-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
