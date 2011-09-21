@@ -1,5 +1,4 @@
 # TODO:
-# - check why it builds all static..
 # - repair ide build
 #
 # Conditional build:
@@ -11,18 +10,18 @@ Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.4.2
-Release:	1
+Version:	2.4.4
+Release:	0.1
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	35ff506cca77b999097ffed61705be95
+# Source0-md5:	d069dfd3412bd0d26dcd1b81ac998305
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	f265bf3b0f13ccb73b161928e3fa1a4b
+# Source1-md5:	e761c4866ac4c8fcbe09f657f315ec32
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	c738800fa943dcb6bac8d44af1e8a82a
+# Source2-md5:	058e6cd765026748a2bd24c86f1ecf18
 Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	b6b62a58230a26b4bf2680953a37040d
+# Source3-md5:	cea93e5da48c45da3147236cba75dc76
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-fpdoc.patch
 URL:		http://www.freepascal.org/
