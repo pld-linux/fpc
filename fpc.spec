@@ -9,7 +9,7 @@ Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
 Version:	2.4.4
-Release:	1
+Release:	2
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
@@ -229,7 +229,9 @@ FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
 %{__make} -j1 -C install/man installman \
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir}
 
-ln -sf %{_libdir}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
+ln -sf ../%{_lib}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
+
+ln -sf %{_bindir}/ld.bfd $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/ld
 
 sh fpcsrc/compiler/utils/samplecfg %{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
 
@@ -249,6 +251,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/%{version}/ide
 %endif
 %{_libdir}/%{name}/lexyacc/*
+%attr(755,root,root) %{_libdir}/%{name}/%{version}/ld
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
 %{_mandir}/man*/*
