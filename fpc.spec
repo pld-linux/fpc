@@ -1,8 +1,6 @@
-# TODO:
-# - repair ide build
 #
 # Conditional build:
-%bcond_with	ide			# build with ide
+%bcond_without	ide			# build with ide
 %bcond_without	doc			# build without doc
 
 Summary:	32-bit compiler for the i386 and m68k processors
@@ -23,18 +21,25 @@ Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%
 Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
 # Source3-md5:	cea93e5da48c45da3147236cba75dc76
 Patch0:		%{name}-skip-dev-dot.patch
+Patch1:		%{name}-link.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
-BuildRequires:	gdb-lib
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
-%{?with_ide:BuildRequires:	readline-static}
 BuildRequires:	rpmbuild(macros) >= 1.213
-%{?with_doc:BuildRequires:	tetex-fonts-jknappen}
-%{?with_doc:BuildRequires:	tetex-format-pdflatex}
-%{?with_doc:BuildRequires:	tetex-makeindex}
-%{?with_doc:BuildRequires:	tetex-metafont}
-%{?with_doc:BuildRequires:	texlive-xetex}
+%if %{with ide}
+BuildRequires:	gdb-lib >= 7.2-6
+BuildRequires:	python-static
+BuildRequires:	readline-static
+BuildRequires:	zlib-static
+%endif
+%if %{with doc}
+BuildRequires:	tetex-fonts-jknappen
+BuildRequires:	tetex-format-pdflatex
+BuildRequires:	tetex-makeindex
+BuildRequires:	tetex-metafont
+BuildRequires:	texlive-xetex
+%endif
 Requires:	binutils
 Provides:	fpc-bootstrap
 ExclusiveArch:	%{ix86} %{x8664} ppc
@@ -106,6 +111,7 @@ Dokumentacja do fpc w formacie PDF.
 %prep
 %setup -q -n %{name}build-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
@@ -131,11 +137,17 @@ for i in ../*.tar.gz ; do
 	tar xzf $i
 done
 ln -sf `pwd`/lib/%{name}/%{_bver}/ppc* bin
+cd ..
 
-%build
 # save for fpc-src
 install -d fpc-src
 cp -af fpcsrc/* fpc-src
+
+%build
+# use ld.bfd
+[ -d our-ld ] || install -d our-ld
+ln -sf %{_bindir}/ld.bfd our-ld/ld
+export PATH=$(pwd)/our-ld:$PATH
 
 PP=`pwd`/bin/lib/%{name}/%{_bver}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
@@ -177,26 +189,7 @@ esac
 	%{?with_ide: ide_clean installer_clean} \
 	rtl_all \
 	packages_all \
-	utils_all %{?with_ide:installer_all}
-
-#	%{?with_ide:IDE=YES} \
-%if %{with ide}
-%{__make} -C fpcsrc/ide OPT="$OPTF -Xs -n" \
-	RELEASE="1" \
-	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
-	BININSTALLDIR=%{_bindir} \
-	GDBLIBDIR=%{_libdir} \
-	PP="$NEWPP" \
-	FPC="$NEWPP" \
-	FPDOC=$NEWFPDOC \
-	DATA2INC=`pwd`/utils/data2inc \
-	LINKSMART=YES \
-	clean \
-	default \
-	gdb
-%endif
-#	%{?with_ide:installer_clean} \
-#	%{?with_ide:installer_all}
+	utils_all %{?with_ide:ide_all installer_all}
 
 %if %{with doc}
 export save_size=10000
