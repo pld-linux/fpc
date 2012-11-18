@@ -70,10 +70,30 @@
    {$define GDB_USES_BP_LOCATION}
    {$define GDB_BP_LOCATION_HAS_GLOBAL_NEXT}
    {$define GDB_NEEDS_NO_ERROR_INIT}
-@@ -120,13 +113,44 @@
+@@ -120,13 +113,64 @@
    {$define GDB_HAS_BP_NONE}
  {$endif def GDB_V608}
  
++{ 7.5.x }
++{$ifdef GDB_V705}
++  {$info using gdb 7.5.x}
++  {$define GDB_V7}
++  {$define GDB_BP_LOCATION_HAS_GDBARCH}
++  {$define GDB_HAS_PROGRAM_SPACE}
++  {$define GDB_NO_UIOUT}
++  {$define GDB_NEEDS_INTERPRETER_SETUP}
++  {$define GDB_NEEDS_SET_INSTREAM}
++  {$define GDB_NOTIFY_BREAKPOINT_ARG_IS_BREAKPOINT_PTR}
++  {$define GDB_USES_BP_OPS}
++  {$define GDB_BP_TI_HAS_LENGTH}
++  {$define GDB_BP_LOCATION_HAS_REFCOUNT}
++  {$define GDB_BP_LOCATION_HAS_OPS}
++  {$define GDB_UI_FILE_HAS_WRITE_ASYNC}
++  {$ifdef win32}
++      {$define GDB_USES_LIBADVAPI32}
++  {$endif win32}
++{$endif def GDB_V705}
++
 +{ 7.4.x }
 +{$ifdef GDB_V704}
 +  {$info using gdb 7.4.x}
