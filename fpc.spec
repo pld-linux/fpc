@@ -32,7 +32,9 @@ BuildRequires:	rpmbuild(macros) >= 1.213
 BuildRequires:	gdb-lib >= 7.2-7
 BuildRequires:	python-static
 BuildRequires:	readline-static
+BuildRequires:	libselinux-static
 BuildRequires:	zlib-static
+BuildRequires:	xz-static
 %endif
 %if %{with doc}
 BuildRequires:	tetex-fonts-jknappen
@@ -240,7 +242,8 @@ ln -sf ../%{_lib}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
 
 ln -sf %{_bindir}/ld.bfd $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/ld
 
-sh fpcsrc/compiler/utils/samplecfg %{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
+sh fpc-src/compiler/utils/samplecfg $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
+%{__sed} -i -e "s,$RPM_BUILD_ROOT,,g" $RPM_BUILD_ROOT%{_sysconfdir}/{*.cfg,fppkg/default}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -249,6 +252,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/*
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fpc.cfg
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fppkg.cfg
+%dir %{_sysconfdir}/fppkg
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fppkg/default
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/%{version}
 %dir %{_libdir}/%{name}/lexyacc
