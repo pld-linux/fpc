@@ -8,20 +8,21 @@ Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.4.4
-Release:	3
+Version:	2.6.0
+Release:	0.1
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	d069dfd3412bd0d26dcd1b81ac998305
+# Source0-md5:	17375e665a4e1311f85812fe2754f609
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	e761c4866ac4c8fcbe09f657f315ec32
+# Source1-md5:	42b8fcaba867f515446a84aa0430db91
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	058e6cd765026748a2bd24c86f1ecf18
+# Source2-md5:	631d93ca49778537cd84fa3a2878883c
 Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	cea93e5da48c45da3147236cba75dc76
+# Source3-md5:	e08ac5d45747d8a12589b55c7cd58ded
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
+Patch2:		%{name}-gdb.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
 BuildRequires:	gpm-devel
@@ -112,28 +113,34 @@ Dokumentacja do fpc w formacie PDF.
 %setup -q -n %{name}build-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
 %define _bver %{version}
 %define _bname 386
+%define _barch i386
 %endif
 %ifarch %{x8664}
 tar xf %{SOURCE2}
 %define _bver %{version}
 %define _bname x64
+%define _barch x86_64
 %endif
 %ifarch ppc
 tar xf %{SOURCE3}
 %define _bver %{version}
 %define _bname ppc
+%define _barch powepc
 %endif
 
+cd %{name}-%{version}.%{_barch}-linux
 tar xf binary.*-linux.tar
+cd ..
 
 mkdir bin
 cd bin
-for i in ../*.tar.gz ; do
+for i in ../%{name}-%{version}.%{_barch}-linux/*.tar.gz ; do
 	tar xzf $i
 done
 ln -sf `pwd`/lib/%{name}/%{_bver}/ppc* bin
