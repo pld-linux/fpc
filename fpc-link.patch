@@ -1,10 +1,13 @@
 --- fpcbuild-2.4.4/fpcsrc/packages/gdbint/src/gdbint.pp~	2011-09-21 19:34:32.658045055 +0200
 +++ fpcbuild-2.4.4/fpcsrc/packages/gdbint/src/gdbint.pp	2011-09-21 19:35:07.381379951 +0200
-@@ -242,6 +242,7 @@
+@@ -242,6 +242,10 @@
      {$LINKLIB libsim.a}
    {$endif GDB_HAS_SIM}
    {$LINKLIB libbfd.a}
 +  {$LINKLIB libz.a}
++  {$LINKLIB liblzma.a}
++  {$LINKLIB libselinux.a}
++  {$LINKLIB libsepol.a}
    {$LINKLIB libreadline.a}
    {$LINKLIB libopcodes.a}
    {$LINKLIB libhistory.a}
