@@ -8,18 +8,18 @@ Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.6.0
+Version:	2.6.2
 Release:	1
 License:	GPL
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	17375e665a4e1311f85812fe2754f609
+# Source0-md5:	89c7e60db6280f3d5cc006a4a9ff43a9
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	42b8fcaba867f515446a84aa0430db91
+# Source1-md5:	3474affc41d6106c498fc5b79f883588
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	631d93ca49778537cd84fa3a2878883c
+# Source2-md5:	c32c4c8e94aed6f84b34407e7ea84ecd
 Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	e08ac5d45747d8a12589b55c7cd58ded
+# Source3-md5:	07f891e7552aeb21908940b05c3062a3
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-gdb.patch
@@ -33,6 +33,7 @@ BuildRequires:	gdb-lib >= 7.2-7
 BuildRequires:	python-static
 BuildRequires:	readline-static
 BuildRequires:	libselinux-static
+BuildRequires:	libsepol-static
 BuildRequires:	zlib-static
 BuildRequires:	xz-static
 %endif
@@ -213,6 +214,7 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_datadir}/fpcsrc,%{_examplesdir}/fpc}
 
 cp -af fpc-src/* $RPM_BUILD_ROOT%{_datadir}/fpcsrc
+rm -r $RPM_BUILD_ROOT%{_datadir}/fpcsrc/tests
 
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
