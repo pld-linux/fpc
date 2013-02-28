@@ -152,6 +152,7 @@ cd ..
 # save for fpc-src
 install -d fpc-src
 cp -af fpcsrc/* fpc-src
+rm -r fpc-src/{ide,tests}
 
 %build
 # use ld.bfd
@@ -214,7 +215,6 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_datadir}/fpcsrc,%{_examplesdir}/fpc}
 
 cp -af fpc-src/* $RPM_BUILD_ROOT%{_datadir}/fpcsrc
-rm -r $RPM_BUILD_ROOT%{_datadir}/fpcsrc/tests
 
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
