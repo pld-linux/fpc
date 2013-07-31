@@ -23,6 +23,7 @@ Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-gdb.patch
+Patch3:		%{name}-r22920.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-static >= 3:2.17.50
 BuildRequires:	gpm-devel
@@ -117,6 +118,7 @@ Dokumentacja do fpc w formacie PDF.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p0
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
