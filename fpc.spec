@@ -10,7 +10,7 @@ Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
 Version:	2.6.2
 Release:	1
-License:	GPL
+License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
 # Source0-md5:	89c7e60db6280f3d5cc006a4a9ff43a9
@@ -25,18 +25,18 @@ Patch1:		%{name}-link.patch
 Patch2:		%{name}-gdb.patch
 Patch3:		%{name}-r22920.patch
 URL:		http://www.freepascal.org/
-BuildRequires:	binutils-static >= 3:2.17.50
+BuildRequires:	binutils-devel >= 3:2.17.50
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
 %if %{with ide}
+BuildRequires:	expat-devel
 BuildRequires:	gdb-lib >= 7.2-7
-BuildRequires:	python-static
-BuildRequires:	readline-static
-BuildRequires:	libselinux-static
-BuildRequires:	libsepol-static
-BuildRequires:	zlib-static
-BuildRequires:	xz-static
+BuildRequires:	python-devel
+BuildRequires:	readline-devel
+BuildRequires:	libselinux-devel
+BuildRequires:	xz-devel
+BuildRequires:	zlib-devel
 %endif
 %if %{with doc}
 BuildRequires:	tetex-fonts-jknappen
