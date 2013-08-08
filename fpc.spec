@@ -156,6 +156,10 @@ install -d fpc-src
 cp -af fpcsrc/* fpc-src
 rm -r fpc-src/{ide,tests}
 
+%if 0%{?debug:1}
+find fpcsrc -name Makefile | xargs %{__sed} -i -e 's/-Xs//'
+%endif
+
 %build
 # use ld.bfd
 [ -d our-ld ] || install -d our-ld
@@ -177,7 +181,7 @@ case "%{_build_cpu}" in
 esac
 
 %{__make} -C fpcsrc compiler_cycle \
-	OPT="$OPTF -Xs -n" \
+	OPT="$OPTF %{!?debug:-Xs} -n" \
 	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
@@ -185,7 +189,7 @@ esac
 	FPC="$PP" \
 	LINKSMART=YES
 
-%{__make} -C fpcsrc OPT="$OPTF -Xs -n" \
+%{__make} -C fpcsrc OPT="$OPTF %{!?debug:-Xs} -n" \
 	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \

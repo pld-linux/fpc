@@ -495,3 +495,31 @@
      { gdb_sysroot global variable is declared in defs.h and
        instanciated in main.c since version 6.0 }
      gdb_datadir  : pchar; cvar;public;
+--- fpcbuild-2.6.2/fpcsrc/packages/gdbint/src/gdbint.pp.orig	2013-08-08 20:14:59.169199840 +0200
++++ fpcbuild-2.6.2/fpcsrc/packages/gdbint/src/gdbint.pp	2013-08-08 21:50:53.262291698 +0200
+@@ -68,6 +68,7 @@
+ 
+ {$ifdef GDB_VER_GE_706}
+   {$define GDB_VER_GE_705}
++  {$define GDB_UI_FILE_HAS_TO_FSEEK}
+ {$endif}
+ { 7.5.x }
+ {$ifdef GDB_V705}
+@@ -695,6 +696,7 @@
+   ui_file_rewind_ftype = procedure(stream : pui_file);cdecl;
+   ui_file_put_method_ftype = procedure(var _object; buffer : pchar;length_buffer : longint);cdecl;
+   ui_file_put_ftype = procedure(stream : pui_file;method : ui_file_put_method_ftype;var context);cdecl;
++  ui_file_fseek_ftype = function(stream : pui_file; offset : longint; whence  : integer):integer;cdecl;
+   {$ifdef GDB_V6}
+   ui_file_read_ftype = function (stream : pui_file; buffer : pchar; len : longint):longint;cdecl;
+   {$endif}
+@@ -714,6 +716,9 @@
+       to_isatty : ui_file_isatty_ftype;
+       to_rewind : ui_file_rewind_ftype;
+       to_put    : ui_file_put_ftype;
++      {$ifdef GDB_UI_FILE_HAS_TO_FSEEK}
++      to_fseek  : ui_file_fseek_ftype;
++      {$endif}
+       to_data   : pointer;
+     end;
+ 
