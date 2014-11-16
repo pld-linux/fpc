@@ -9,7 +9,7 @@ Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
 Version:	2.6.4
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
@@ -153,17 +153,17 @@ done
 ln -sf `pwd`/lib/%{name}/%{_bver}/ppc* bin
 cd ..
 
+find fpcsrc -name Makefile -o -name fpcmake.ini -o -name fpmkunit.pp | \
+	xargs %{__sed} -i -e 's|/usr/lib/|%{_libdir}/|g'
+
 # save for fpc-src
 install -d fpc-src
 cp -af fpcsrc/* fpc-src
 rm -r fpc-src/{ide,tests}
 
-find fpcsrc -name Makefile -o -name fpcmake.ini | \
-xargs %{__sed} -i \
 %if 0%{?debug:1}
--e 's/-Xs//' \
+find fpcsrc -name Makefile | xargs %{__sed} -i -e 's/-Xs//'
 %endif
--e 's|/usr/lib/|%{_libdir}/|g'
 
 %build
 # use ld.bfd
@@ -240,6 +240,7 @@ FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
 	PP="$NEWPP" \
 	FPCMAKE="$FPCMAKE" \
 	SMARTLINK=YES \
+	FPCDIR=%{_libdir}/%{name}/%{version} \
 	INSTALL_PREFIX=$RPM_BUILD_ROOT%{_prefix} \
 	INSTALL_BINDIR=$RPM_BUILD_ROOT%{_bindir} \
 	INSTALL_LIBDIR=$RPM_BUILD_ROOT%{_libdir} \
@@ -259,6 +260,14 @@ ln -sf %{_bindir}/ld.bfd $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/ld
 
 sh fpc-src/compiler/utils/samplecfg $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
 %{__sed} -i -e "s,$RPM_BUILD_ROOT,,g" $RPM_BUILD_ROOT%{_sysconfdir}/{*.cfg,fppkg/default}
+
+# I have no idea why some units are installed to /usr/lib - baggins
+%if "%{_lib}" != "lib"
+cd $RPM_BUILD_ROOT/usr/lib/%{name}/%{version}/units
+for d in * ; do
+	%{__mv} $d/* $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/units/$d/
+done
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
