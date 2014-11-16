@@ -1,6 +1,6 @@
 --- fpcbuild-2.6.2/fpcsrc/packages/gdbint/src/gdbint.pp.orig	2012-10-29 11:20:11.000000000 +0100
 +++ fpcbuild-2.6.2/fpcsrc/packages/gdbint/src/gdbint.pp	2013-04-01 18:28:20.664497672 +0200
-@@ -266,10 +266,13 @@
+@@ -266,10 +266,16 @@
      {$LINKLIB libsim.a}
    {$endif GDB_HAS_SIM}
 -  {$LINKLIB libbfd.a}
@@ -11,6 +11,9 @@
 +  {$LINKLIB opcodes}
 +  {$LINKLIB readline}
 +  {$LINKLIB history}
++  {$LINKLIB guile-2.0}
++  {$LINKLIB babeltrace}
++  {$LINKLIB babeltrace-ctf}
    {$LINKLIB libiberty.a}
 +  {$LINKLIB selinux}
 +  {$LINKLIB z}

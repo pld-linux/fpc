@@ -8,18 +8,18 @@ Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.6.2
-Release:	7
+Version:	2.6.4
+Release:	1
 License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	89c7e60db6280f3d5cc006a4a9ff43a9
+# Source0-md5:	403da132aed194fd841d46c3b33b022a
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	3474affc41d6106c498fc5b79f883588
+# Source1-md5:	915f799dd58b5429f06a48d4bd84a9c2
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	c32c4c8e94aed6f84b34407e7ea84ecd
+# Source2-md5:	ffc3cae4a72b60efb6873b9ce5c8a0f2
 Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	07f891e7552aeb21908940b05c3062a3
+# Source3-md5:	28eb428bfaa8a72e49be05ed0efa0081
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-gdb.patch
@@ -30,8 +30,10 @@ BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.213
 %if %{with ide}
+BuildRequires:	babeltrace-devel
 BuildRequires:	expat-devel
 BuildRequires:	gdb-lib >= 7.2-7
+BuildRequires:	guile-devel
 BuildRequires:	python-devel
 BuildRequires:	readline-devel
 BuildRequires:	libselinux-devel
@@ -156,9 +158,12 @@ install -d fpc-src
 cp -af fpcsrc/* fpc-src
 rm -r fpc-src/{ide,tests}
 
+find fpcsrc -name Makefile -o -name fpcmake.ini | \
+xargs %{__sed} -i \
 %if 0%{?debug:1}
-find fpcsrc -name Makefile | xargs %{__sed} -i -e 's/-Xs//'
+-e 's/-Xs//' \
 %endif
+-e 's|/usr/lib/|%{_libdir}/|g'
 
 %build
 # use ld.bfd
@@ -169,6 +174,7 @@ export PATH=$(pwd)/our-ld:$PATH
 PP=`pwd`/bin/lib/%{name}/%{_bver}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/fpdoc
+DATA2INC=`pwd`/fpcsrc/utils/data2inc
 
 # DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
 case "%{_build_cpu}" in
@@ -185,6 +191,7 @@ esac
 	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
+	DATA2INC="$DATA2INC" \
 	PP="$PP" \
 	FPC="$PP" \
 	LINKSMART=YES
@@ -194,10 +201,10 @@ esac
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
 	GDBLIBDIR=%{_libdir} \
+	DATA2INC="$DATA2INC" \
 	PP="$NEWPP" \
 	FPC="$NEWPP" \
 	FPDOC=$NEWFPDOC \
-	DATA2INC=`pwd`/utils/data2inc \
 	LINKSMART=YES \
 	NODOCS=YES \
 	rtl_clean \
