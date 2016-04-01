@@ -8,22 +8,21 @@ Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	2.6.4
-Release:	6
+Version:	3.0.0
+Release:	0.1
 License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	403da132aed194fd841d46c3b33b022a
+# Source0-md5:	bb7d17ef5c7c007466368262c0779cb7
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	915f799dd58b5429f06a48d4bd84a9c2
+# Source1-md5:	41e0bcb7c11b7edf311142079ba2defa
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	ffc3cae4a72b60efb6873b9ce5c8a0f2
-Source3:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/powerpc-linux/%{name}-%{version}.powerpc-linux.tar
-# Source3-md5:	28eb428bfaa8a72e49be05ed0efa0081
+# Source2-md5:	db2ae45b0d1846e01b61ba52f03e60b2
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-gdb.patch
-Patch3:		%{name}-r22920.patch
+Patch3:		fpc-r32374.patch
+Patch4:		fpcdocs-r1260.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-devel >= 3:2.17.50
 BuildRequires:	gpm-devel
@@ -49,7 +48,7 @@ BuildRequires:	texlive-xetex
 %endif
 Requires:	binutils
 Provides:	fpc-bootstrap
-ExclusiveArch:	%{ix86} %{x8664} ppc
+ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -121,6 +120,7 @@ Dokumentacja do fpc w formacie PDF.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p0
+%patch4 -p0
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
@@ -133,12 +133,6 @@ tar xf %{SOURCE2}
 %define _bver %{version}
 %define _bname x64
 %define _barch x86_64
-%endif
-%ifarch ppc
-tar xf %{SOURCE3}
-%define _bver %{version}
-%define _bname ppc
-%define _barch powepc
 %endif
 
 cd %{name}-%{version}.%{_barch}-linux
@@ -173,8 +167,8 @@ export PATH=$(pwd)/our-ld:$PATH
 
 PP=`pwd`/bin/lib/%{name}/%{_bver}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
-NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/fpdoc
-DATA2INC=`pwd`/fpcsrc/utils/data2inc
+NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/bin/%{_barch}-linux/fpdoc
+DATA2INC=`pwd`/fpcsrc/utils/bin/%{_barch}-linux/data2inc
 
 # DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
 case "%{_build_cpu}" in
@@ -230,7 +224,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_mandir},%{_datadir}/fpcsrc,%{_examp
 cp -af fpc-src/* $RPM_BUILD_ROOT%{_datadir}/fpcsrc
 
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
-FPCMAKE=`pwd`/fpcsrc/utils/fpcm/fpcmake
+FPCMAKE=`pwd`/fpcsrc/utils/fpcm/bin/%{_barch}-linux/fpcmake
 %{__make} -j1 -C fpcsrc \
 	compiler_distinstall \
 	rtl_distinstall \
@@ -261,12 +255,8 @@ ln -sf %{_bindir}/ld.bfd $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/ld
 sh fpc-src/compiler/utils/samplecfg $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
 %{__sed} -i -e "s,$RPM_BUILD_ROOT,,g" $RPM_BUILD_ROOT%{_sysconfdir}/{*.cfg,fppkg/default}
 
-# I have no idea why some units are installed to /usr/lib - baggins
 %if "%{_lib}" != "lib"
-cd $RPM_BUILD_ROOT/usr/lib/%{name}/%{version}/units
-for d in * ; do
-	%{__mv} $d/* $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/units/$d/
-done
+mv $RPM_BUILD_ROOT/usr/lib/%{name}/lexyacc $RPM_BUILD_ROOT/%{_libdir}/%{name}/
 %endif
 
 %clean
@@ -284,6 +274,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}/lexyacc
 %{_libdir}/%{name}/%{version}/msg
 %{_libdir}/%{name}/%{version}/units
+%{_libdir}/%{name}/%{version}/fpmkinst
 %if %{with ide}
 %{_libdir}/%{name}/%{version}/ide
 %endif
