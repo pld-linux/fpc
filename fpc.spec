@@ -9,7 +9,7 @@ Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
 Version:	3.0.0
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
@@ -256,7 +256,7 @@ sh fpc-src/compiler/utils/samplecfg $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}
 %{__sed} -i -e "s,$RPM_BUILD_ROOT,,g" $RPM_BUILD_ROOT%{_sysconfdir}/{*.cfg,fppkg/default}
 
 %if "%{_lib}" != "lib"
-%{__mv} $RPM_BUILD_ROOT/usr/lib/%{name}/lexyacc $RPM_BUILD_ROOT/%{_libdir}/%{name}/
+%{__mv} $RPM_BUILD_ROOT%{_prefix}/lib/%{name}/lexyacc $RPM_BUILD_ROOT%{_libdir}/%{name}
 %endif
 
 # Fix examples, make seems to ignore INSTALL_EXAMPLEDIR
