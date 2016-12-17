@@ -1,7 +1,7 @@
 #
 # Conditional build:
-%bcond_without	ide			# build with ide
-%bcond_without	doc			# build without doc
+%bcond_without	ide	# build with ide
+%bcond_without	doc	# build without doc
 
 Summary:	32-bit compiler for the i386 and m68k processors
 Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
@@ -23,6 +23,7 @@ Patch1:		%{name}-link.patch
 Patch2:		%{name}-gdb.patch
 Patch3:		fpc-r32374.patch
 Patch4:		fpcdocs-r1260.patch
+Patch5:		fpc-man.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-devel >= 3:2.17.50
 BuildRequires:	gpm-devel
@@ -49,6 +50,9 @@ BuildRequires:	texlive-xetex
 Requires:	binutils
 Provides:	fpc-bootstrap
 ExclusiveArch:	%{ix86} %{x8664}
+# TODO:
+# %{arm} ftp://ftp.freepascal.org/pub/fpc/dist/3.0.0/arm-linux/fpc-3.0.0.arm-linux-raspberry1wq.tar
+# ppc64 ftp://ftp.freepascal.org/pub/fpc/dist/3.0.0/powerpc64-linux/fpc-3.0.0.powerpc64-linux.tar
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -121,6 +125,7 @@ Dokumentacja do fpc w formacie PDF.
 %patch2 -p1
 %patch3 -p0
 %patch4 -p0
+%patch5 -p1
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
@@ -133,6 +138,26 @@ tar xf %{SOURCE2}
 %define _bver %{version}
 %define _bname x64
 %define _barch x86_64
+%endif
+%ifarch %{arm}
+%define _bver %{version}
+%define _bname arm
+%define _barch arm
+%endif
+%ifarch ppc
+%define _bver ?
+%define _bname ppc
+%define _barch powerpc
+%endif
+%ifarch ppc64
+%define _bver %{version}
+%define _bname ppc64
+%define _barch powerpc64
+%endif
+%ifarch sparc sparcv9
+%define _bver ?
+%define _bname sparc
+%define _barch sparc
 %endif
 
 cd %{name}-%{version}.%{_barch}-linux
@@ -149,6 +174,9 @@ cd ..
 
 find fpcsrc -name Makefile -o -name fpcmake.ini -o -name fpmkunit.pp | \
 	xargs %{__sed} -i -e 's|/usr/lib/|%{_libdir}/|g'
+
+# remove precompiled objects from fpc-src
+%{__rm} fpcsrc/rtl/palmos/m68k/{libcrt.a,*.o}
 
 # save for fpc-src
 install -d fpc-src
@@ -172,11 +200,9 @@ DATA2INC=`pwd`/fpcsrc/utils/bin/%{_barch}-linux/data2inc
 
 # DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
 case "%{_build_cpu}" in
-	i386) OPTF="-OG2p1" ;;
-	i486) OPTF="-OG2p1" ;;
+	i386|i486) OPTF="-OG2p1" ;;
 	i586) OPTF="-OG2p2" ;;
-	i686) OPTF="-Og2p3" ;;
-	athlon) OPTF="-Og2p3" ;;
+	i686|athlon|pentium3|pentium4|x86_64|amd64|ia32e) OPTF="-Og2p3" ;;
 	*) OPTF="-O2" ;;
 esac
 
@@ -262,12 +288,80 @@ sh fpc-src/compiler/utils/samplecfg $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}
 # Fix examples, make seems to ignore INSTALL_EXAMPLEDIR
 %{__mv} $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/* $RPM_BUILD_ROOT%{_examplesdir}/fpc/
 
+%ifnarch %{ix86}
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/ppc386.1
+%endif
+%ifnarch %{arm}
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/ppcarm.1
+%endif
+%ifnarch ppc ppc64
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/ppcppc.1
+%endif
+%ifnarch sparc sparcv9
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/ppcsparc.1
+%endif
+%ifnarch %{x8664}
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/ppcx64.1
+%endif
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/*
+%attr(755,root,root) %{_bindir}/bin2obj
+%attr(755,root,root) %{_bindir}/chmcmd
+%attr(755,root,root) %{_bindir}/chmls
+%attr(755,root,root) %{_bindir}/cldrparser
+%attr(755,root,root) %{_bindir}/data2inc
+%attr(755,root,root) %{_bindir}/delp
+%attr(755,root,root) %{_bindir}/fd2pascal
+%attr(755,root,root) %{_bindir}/fp
+%attr(755,root,root) %{_bindir}/fpc*
+%attr(755,root,root) %{_bindir}/fpdoc
+%attr(755,root,root) %{_bindir}/fppkg
+%attr(755,root,root) %{_bindir}/fprcp
+%attr(755,root,root) %{_bindir}/grab_vcsa
+%attr(755,root,root) %{_bindir}/h2pas
+%attr(755,root,root) %{_bindir}/h2paspp
+%attr(755,root,root) %{_bindir}/instantfpc
+%attr(755,root,root) %{_bindir}/makeskel
+%attr(755,root,root) %{_bindir}/mkarmins
+%attr(755,root,root) %{_bindir}/mkinsadd
+%attr(755,root,root) %{_bindir}/mkx86ins
+%attr(755,root,root) %{_bindir}/pas2fpm
+%attr(755,root,root) %{_bindir}/pas2jni
+%attr(755,root,root) %{_bindir}/pas2ut
+%attr(755,root,root) %{_bindir}/plex
+%attr(755,root,root) %{_bindir}/postw32
+%attr(755,root,root) %{_bindir}/ppc%{_bname}
+%attr(755,root,root) %{_bindir}/ppdep
+%attr(755,root,root) %{_bindir}/ppudump
+%attr(755,root,root) %{_bindir}/ppufiles
+%attr(755,root,root) %{_bindir}/ppumove
+%attr(755,root,root) %{_bindir}/ptop
+%attr(755,root,root) %{_bindir}/pyacc
+%attr(755,root,root) %{_bindir}/rmcvsdir
+%attr(755,root,root) %{_bindir}/rstconv
+%attr(755,root,root) %{_bindir}/unihelper
+%attr(755,root,root) %{_bindir}/unitdiff
+# TODO: move the below files to datadir
+# - ANSI art file used by fp binary
+%{_bindir}/fp.ans
+# - IDE command templates
+%{_bindir}/cvsco.tdf
+%{_bindir}/cvsdiff.tdf
+%{_bindir}/cvsup.tdf
+%{_bindir}/grep.tdf
+%{_bindir}/tpgrep.tdf
+# - Pascal code skeletons
+%{_bindir}/gplprog.pt
+%{_bindir}/gplunit.pt
+%{_bindir}/program.pt
+%{_bindir}/unit.pt
+# - JSON resources(?)
+%{_bindir}/makeskel.rsj
+%{_bindir}/ptop.rsj
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fpc.cfg
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fppkg.cfg
 %dir %{_sysconfdir}/fppkg
@@ -285,7 +379,43 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ld
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
-%{_mandir}/man*/*
+%{_mandir}/man1/bin2obj.1*
+%{_mandir}/man1/chmcmd.1*
+%{_mandir}/man1/chmls.1*
+%{_mandir}/man1/data2inc.1*
+%{_mandir}/man1/delp.1*
+%{_mandir}/man1/fd2pascal.1*
+%{_mandir}/man1/fp.1*
+%{_mandir}/man1/fpc*.1*
+%{_mandir}/man1/fpdoc.1*
+%{_mandir}/man1/fppkg.1*
+%{_mandir}/man1/fprcp.1*
+%{_mandir}/man1/grab_vcsa.1*
+%{_mandir}/man1/h2pas.1*
+%{_mandir}/man1/h2paspp.1*
+%{_mandir}/man1/makeskel.1*
+%{_mandir}/man1/pas2fpm.1*
+%{_mandir}/man1/pas2jni.1*
+%{_mandir}/man1/pas2ut.1*
+%{_mandir}/man1/plex.1*
+%{_mandir}/man1/postw32.1*
+%ifarch ppc64
+%{_mandir}/man1/ppcppc.1*
+%else
+%{_mandir}/man1/ppc%{_bname}.1*
+%endif
+%{_mandir}/man1/ppdep.1*
+%{_mandir}/man1/ppudump.1*
+%{_mandir}/man1/ppufiles.1*
+%{_mandir}/man1/ppumove.1*
+%{_mandir}/man1/ptop.1*
+%{_mandir}/man1/pyacc.1*
+%{_mandir}/man1/rmcvsdir.1*
+%{_mandir}/man1/rstconv.1*
+%{_mandir}/man1/unitdiff.1*
+%{_mandir}/man5/fpc.cfg.5*
+%{_mandir}/man5/fpcmake.5*
+%{_mandir}/man5/ptop.cfg.5*
 
 %files src
 %defattr(644,root,root,755)
