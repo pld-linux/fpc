@@ -1,10 +1,10 @@
 #
 # Conditional build:
-%bcond_without	ide	# build with ide
-%bcond_without	doc	# build without doc
+%bcond_without	ide	# FPC IDE
+%bcond_without	doc	# documentation
 
-Summary:	32-bit compiler for the i386 and m68k processors
-Summary(pl.UTF-8):	32 bitowy kompilator dla procesorów i386 i m68k
+Summary:	Free Pascal - 32-bit Pascal compiler
+Summary(pl.UTF-8):	Free Pascal - 32-bitowy kompilator języka Pascal
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
@@ -56,18 +56,17 @@ ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-Free Pascal is a 32-bit compiler for the i386 and m68k processors.
-Free Pascal is designed to be, as much as possible, source compatible
-with Turbo Pascal 7.0 and Delphi 4 (although this goal is not yet
-attained), but it also enhances these languages with elements like
-function overloading. And, unlike these ancestors, it supports
-multiple platforms.
+Free Pascal is a 32-bit Pascal compiler. Free Pascal is designed to
+be, as much as possible, source compatible with Turbo Pascal 7.0 and
+Delphi 4 (although this goal is not yet attained), but it also
+enhances these languages with elements like function overloading. And,
+unlike these ancestors, it supports multiple platforms.
 
 %description -l pl.UTF-8
-Free Pascal to 32 bitowy kompilator dla procesorów i386 oraz m86k.
-Free Pascal został zaprojektowany by być (jak tylko to możliwe)
-kompatybilnym z Turbo Pascal 7.0 oraz Delphi 4. Free Pascal również
-rozszerza te języki elementami takimi jak przeciążanie funkcji.
+Free Pascal to 32-bitowy kompilator języka Pascal. Free Pascal został
+zaprojektowany by być (na ile to tylko możliwe) kompatybilnym z Turbo
+Pascalem 7.0 oraz Delphi 4. Free Pascal również rozszerza te języki
+elementami takimi jak przeciążanie funkcji.
 
 %description -l ru.UTF-8
 FPC -- 32-битный компилятор Pascal, совместимый с Turbo Pascal 7.0 и
@@ -80,6 +79,18 @@ FPC -- 32-бітний компілятор Pascal, сумісний із Turbo 
 Delphi. Постачається із RTL (бібліотекою часу виконання), FCL
 (бібліотекою вільних компонент), інтерфейсами до gtk, ncurses, zlib,
 mysql, postgres, ibase.
+
+%package ide
+Summary:	Free Pascal IDE (integrated development environment)
+Summary(pl.UTF-8):	Zintegrowane środowisko programistyczne (IDE) Free Pascala
+Group:		Development/Tools
+Requires:	%{name} = %{version}-%{release}
+
+%description ide
+Free Pascal IDE (integrated development environment).
+
+%description ide -l pl.UTF-8
+Zintegrowane środowisko programistyczne (IDE) Free Pascala.
 
 %package src
 Summary:	Free Pascal Compiler source files
@@ -316,7 +327,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/data2inc
 %attr(755,root,root) %{_bindir}/delp
 %attr(755,root,root) %{_bindir}/fd2pascal
-%attr(755,root,root) %{_bindir}/fp
 %attr(755,root,root) %{_bindir}/fpc*
 %attr(755,root,root) %{_bindir}/fpdoc
 %attr(755,root,root) %{_bindir}/fppkg
@@ -345,20 +355,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/rstconv
 %attr(755,root,root) %{_bindir}/unihelper
 %attr(755,root,root) %{_bindir}/unitdiff
-# TODO: move the below files to datadir
-# - ANSI art file used by fp binary
-%{_bindir}/fp.ans
-# - IDE command templates
-%{_bindir}/cvsco.tdf
-%{_bindir}/cvsdiff.tdf
-%{_bindir}/cvsup.tdf
-%{_bindir}/grep.tdf
-%{_bindir}/tpgrep.tdf
-# - Pascal code skeletons
-%{_bindir}/gplprog.pt
-%{_bindir}/gplunit.pt
-%{_bindir}/program.pt
-%{_bindir}/unit.pt
+# TODO: move the below files to data dir
 # - JSON resources(?)
 %{_bindir}/makeskel.rsj
 %{_bindir}/ptop.rsj
@@ -372,9 +369,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/%{version}/msg
 %{_libdir}/%{name}/%{version}/units
 %{_libdir}/%{name}/%{version}/fpmkinst
-%if %{with ide}
-%{_libdir}/%{name}/%{version}/ide
-%endif
 %{_libdir}/%{name}/lexyacc/*
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ld
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
@@ -416,6 +410,27 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/fpc.cfg.5*
 %{_mandir}/man5/fpcmake.5*
 %{_mandir}/man5/ptop.cfg.5*
+
+%if %{with ide}
+%files ide
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/fp
+# TODO: move the below files to data dir
+# - ANSI art file used by fp binary
+%{_bindir}/fp.ans
+# - IDE command templates
+%{_bindir}/cvsco.tdf
+%{_bindir}/cvsdiff.tdf
+%{_bindir}/cvsup.tdf
+%{_bindir}/grep.tdf
+%{_bindir}/tpgrep.tdf
+# - Pascal code skeletons
+%{_bindir}/gplprog.pt
+%{_bindir}/gplunit.pt
+%{_bindir}/program.pt
+%{_bindir}/unit.pt
+%{_libdir}/%{name}/%{version}/ide
+%endif
 
 %files src
 %defattr(644,root,root,755)
