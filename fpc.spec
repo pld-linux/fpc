@@ -8,16 +8,16 @@ Summary(pl.UTF-8):	Free Pascal - 32-bitowy kompilator języka Pascal
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	3.0.0
-Release:	5
+Version:	3.0.2
+Release:	1
 License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	bb7d17ef5c7c007466368262c0779cb7
+# Source0-md5:	c0fc1662dbe45c1e3f66ed780a443849
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	41e0bcb7c11b7edf311142079ba2defa
+# Source1-md5:	a58c3a2d7f8625d434abe9518e4ca38c
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	db2ae45b0d1846e01b61ba52f03e60b2
+# Source2-md5:	e5721c1843cff301c5b46abfee17c890
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-gdb.patch
@@ -135,7 +135,7 @@ Dokumentacja do fpc w formacie PDF.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p0
-%patch4 -p0
+#%patch4 -p0
 %patch5 -p1
 
 %ifarch %{ix86}
