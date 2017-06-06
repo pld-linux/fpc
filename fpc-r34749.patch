@@ -1,0 +1,390 @@
+Index: fpcsrc/utils/fpdoc/dglobals.pp
+===================================================================
+--- fpcsrc/utils/fpdoc/dglobals.pp	(revision 34748)
++++ fpcsrc/utils/fpdoc/dglobals.pp	(revision 34749)
+@@ -161,6 +161,7 @@
+   SUsageOption120  = '                  At least one input option is required.';
+   SUsageOption130  = '--input-dir=Dir   Add All *.pp and *.pas files in Dir to list of input files';
+   SUsageOption140  = '--lang=lng        Select output language.';
++  SUsageOption145  = '--macro=name=value Define a macro to preprocess the project file with.';
+   SUsageOption150  = '--ostarget=value  Set the target OS for the scanner.';
+   SUsageOption160  = '--output=name     use name as the output name.';
+   SUsageOption170  = '                  Each backend interprets this as needed.';
+@@ -183,6 +184,7 @@
+   SUsageFormats        = 'The following output formats are supported by this fpdoc:';
+   SUsageBackendHelp    = 'Specify an output format, combined with --help to get more help for this backend.';
+   SUsageFormatSpecific = 'Output format "%s" supports the following options:';
++  SCmdLineErrInvalidMacro     = 'Macro needs to be in the form name=value';
+ 
+   SCmdLineInvalidOption       = 'Ignoring unknown option "%s"';
+   SCmdLineInvalidFormat       = 'Invalid format "%s" specified';
+Index: fpcsrc/utils/fpdoc/mkfpdoc.pp
+===================================================================
+--- fpcsrc/utils/fpdoc/mkfpdoc.pp	(revision 34748)
++++ fpcsrc/utils/fpdoc/mkfpdoc.pp	(revision 34749)
+@@ -26,6 +26,7 @@
+     FOnLog: TPasParserLogHandler;
+     FPParserLogEvents: TPParserLogEvents;
+     FProject : TFPDocProject;
++    FProjectMacros: TStrings;
+     FScannerLogEvents: TPScannerLogEvents;
+     FVerbose: Boolean;
+     function GetOptions: TEngineOptions;
+@@ -32,6 +33,7 @@
+     function GetPackages: TFPDocPackages;
+     procedure SetBaseDescrDir(AValue: String);
+     procedure SetBaseInputDir(AValue: String);
++    procedure SetProjectMacros(AValue: TStrings);
+   Protected
+     Function FixInputFile(Const AFileName : String) : String;
+     Function FixDescrFile(Const AFileName : String) : String;
+@@ -58,6 +60,8 @@
+     // When set, they will be prepended to non-absolute filenames.
+     Property BaseInputDir : String Read FBaseInputDir Write SetBaseInputDir;
+     Property BaseDescrDir : String Read FBaseDescrDir Write SetBaseDescrDir;
++    // Macros used when loading the project file
++    Property ProjectMacros : TStrings Read FProjectMacros Write SetProjectMacros;
+   end;
+ 
+ implementation
+@@ -81,13 +85,13 @@
+     end;
+ end;
+ 
+-Procedure TFPDocCreator.DoLog(Const Msg: String);
++procedure TFPDocCreator.DoLog(const Msg: String);
+ begin
+   If Assigned(OnLog) then
+     OnLog(Self,Msg);
+ end;
+ 
+-procedure TFPDocCreator.DoLog(Const Fmt: String; Args: Array of Const);
++procedure TFPDocCreator.DoLog(const Fmt: String; Args: array of const);
+ begin
+   DoLog(Format(Fmt,Args));
+ end;
+@@ -132,7 +136,7 @@
+   Result:=FProject.Packages;
+ end;
+ 
+-Function TFPDocCreator.FixInputFile(Const AFileName: String): String;
++function TFPDocCreator.FixInputFile(const AFileName: String): String;
+ begin
+   Result:=AFileName;
+   If Result='' then exit;
+@@ -140,7 +144,7 @@
+     Result:=BaseInputDir+Result;
+ end;
+ 
+-Function TFPDocCreator.FixDescrFile(Const AFileName: String): String;
++function TFPDocCreator.FixDescrFile(const AFileName: String): String;
+ begin
+   Result:=AFileName;
+   If Result='' then exit;
+@@ -164,13 +168,19 @@
+     FBaseInputDir:=IncludeTrailingPathDelimiter(FBaseInputDir);
+ end;
+ 
+-Procedure TFPDocCreator.DoBeforeEmitNote(Sender: TObject; Note: TDomElement;
+-  Var EmitNote: Boolean);
++procedure TFPDocCreator.SetProjectMacros(AValue: TStrings);
+ begin
++  if FProjectMacros=AValue then Exit;
++  FProjectMacros.Assign(AValue);
++end;
++
++procedure TFPDocCreator.DoBeforeEmitNote(Sender: TObject; Note: TDomElement;
++  var EmitNote: Boolean);
++begin
+   EmitNote:=True;
+ end;
+ 
+-Constructor TFPDocCreator.Create(AOwner: TComponent);
++constructor TFPDocCreator.Create(AOwner: TComponent);
+ begin
+   inherited Create(AOwner);
+   FProject:=TFPDocProject.Create(Self);
+@@ -178,12 +188,14 @@
+   FProject.Options.CPUTarget:=DefCPUTarget;
+   FProject.Options.OSTarget:=DefOSTarget;
+   FProcessedUnits:=TStringList.Create;
++  FProjectMacros:=TStringList.Create;
+ end;
+ 
+-Destructor TFPDocCreator.Destroy;
++destructor TFPDocCreator.Destroy;
+ begin
+   FreeAndNil(FProcessedUnits);
+   FreeAndNil(FProject);
++  FreeAndNil(FProjectMacros);
+   inherited Destroy;
+ end;
+ 
+@@ -221,7 +233,7 @@
+     Engine.WriteContentFile(APackage.ContentFile);
+ end;
+ 
+-Procedure TFPDocCreator.CreateDocumentation(APackage: TFPDocPackage;
++procedure TFPDocCreator.CreateDocumentation(APackage: TFPDocPackage;
+   ParseOnly: Boolean);
+ 
+ var
+@@ -282,7 +294,7 @@
+   end;
+ end;
+ 
+-Procedure TFPDocCreator.CreateProjectFile(Const AFileName: string);
++procedure TFPDocCreator.CreateProjectFile(const AFileName: string);
+ begin
+   With TXMLFPDocOptions.Create(Self) do
+   try
+@@ -292,11 +304,14 @@
+   end;
+ end;
+ 
+-Procedure TFPDocCreator.LoadProjectFile(Const AFileName: string);
++procedure TFPDocCreator.LoadProjectFile(const AFileName: string);
+ begin
+   With TXMLFPDocOptions.Create(self) do
+     try
+-      LoadOptionsFromFile(FProject,AFileName);
++      if (ProjectMacros.Count>0) then
++        LoadOptionsFromFile(FProject,AFileName,ProjectMacros)
++      else
++        LoadOptionsFromFile(FProject,AFileName,Nil);
+     finally
+       Free;
+     end;
+Index: fpcsrc/utils/fpdoc/fpdoc.pp
+===================================================================
+--- fpcsrc/utils/fpdoc/fpdoc.pp	(revision 34748)
++++ fpcsrc/utils/fpdoc/fpdoc.pp	(revision 34749)
+@@ -90,6 +90,7 @@
+   Writeln(SUsageOption120);
+   Writeln(SUsageOption130);
+   Writeln(SUsageOption140);
++  Writeln(SUsageOption145);
+   Writeln(SUsageOption150);
+   Writeln(SUsageOption160);
+   Writeln(SUsageOption170);
+@@ -181,11 +182,12 @@
+ Const
+   SOptProject = '--project=';
+   SOptPackage = '--package=';
+-  
++  SOptMacro = '--macro=';
++
+   Function ProjectOpt(Const s : string) : boolean;
+ 
+   begin
+-    Result:=(Copy(s,1,3)='-p=') or (Copy(s,1,Length(SOptProject))=SOptProject);
++    Result:=(Copy(s,1,3)='-p=') or (Copy(s,1,Length(SOptProject))=SOptProject) or (Copy(s,1,Length(SOptMacro))=SOptMacro);
+   end;
+ 
+   Function PackageOpt(Const s : string) : boolean;
+@@ -286,7 +288,7 @@
+ 
+ var
+   i: Integer;
+-  Cmd, Arg: String;
++  ProjectFileName,Cmd, Arg: String;
+ 
+ begin
+   if (s = '-h') or (s = '--help') then
+@@ -325,6 +327,12 @@
+       AddDirToFileList(SelectedPackage.Descriptions, Arg, '*.xml')
+     else if (Cmd = '--base-descr-dir') then
+       FCreator.BaseDescrDir:=Arg
++    else if (Cmd = '--macro') then
++      begin
++      If Pos('=',Arg)=0 then
++        WriteLn(StdErr, Format(SCmdLineErrInvalidMacro, [Arg]));
++      FCreator.ProjectMacros.Add(Arg);
++      end
+     else if (Cmd = '-f') or (Cmd = '--format') then
+       begin
+       Arg:=UpperCase(Arg);
+@@ -384,23 +392,28 @@
+ Procedure TFPDocApplication.DoRun;
+ 
+ begin
+-{$IFDEF Unix}
+-  gettext.TranslateResourceStrings('/usr/local/share/locale/%s/LC_MESSAGES/fpdoc.mo');
+-{$ELSE}
+-  gettext.TranslateResourceStrings('intl/fpdoc.%s.mo');
+-{$ENDIF}
+-  WriteLn(STitle);
+-  WriteLn(Format(SVersion, [DefFPCVersion, DefFPCDate]));
+-  WriteLn(SCopyright1);
+-  WriteLn(SCopyright2);
+-  WriteLn;
+-  ParseCommandLine;
+-  if (FWriteProjectFile<>'') then
+-    FCreator.CreateProjectFile(FWriteProjectFile)
+-  else
+-    FCreator.CreateDocumentation(FPackage,FDryRun);
+-  WriteLn(SDone);
+-  Terminate;
++  try
++  {$IFDEF Unix}
++    gettext.TranslateResourceStrings('/usr/local/share/locale/%s/LC_MESSAGES/fpdoc.mo');
++  {$ELSE}
++    gettext.TranslateResourceStrings('intl/fpdoc.%s.mo');
++  {$ENDIF}
++    WriteLn(STitle);
++    WriteLn(Format(SVersion, [DefFPCVersion, DefFPCDate]));
++    WriteLn(SCopyright1);
++    WriteLn(SCopyright2);
++    WriteLn;
++    ParseCommandLine;
++    if (FWriteProjectFile<>'') then
++      FCreator.CreateProjectFile(FWriteProjectFile)
++    else
++      FCreator.CreateDocumentation(FPackage,FDryRun);
++    WriteLn(SDone);
++    Terminate;
++  except
++    ExitCode:=1;
++    Raise;
++  end;
+ end;
+ 
+ constructor TFPDocApplication.Create(AOwner: TComponent);
+Index: fpcsrc/utils/fpdoc/fpdocxmlopts.pas
+===================================================================
+--- fpcsrc/utils/fpdoc/fpdocxmlopts.pas	(revision 34748)
++++ fpcsrc/utils/fpdoc/fpdocxmlopts.pas	(revision 34749)
+@@ -13,6 +13,7 @@
+   TXMLFPDocOptions = Class(TComponent)
+   private
+   Protected
++    Function PreProcessFile(const AFileName: String; Macros: TStrings): TStream; virtual;
+     Procedure Error(Const Msg : String);
+     Procedure Error(Const Fmt : String; Args : Array of Const);
+     Procedure LoadPackage(APackage : TFPDocPackage; E : TDOMElement); virtual;
+@@ -24,7 +25,7 @@
+     procedure SaveInputFile(const AInputFile: String; XML: TXMLDocument; AParent: TDOMElement);virtual;
+     Procedure SavePackage(APackage : TFPDocPackage; XML : TXMLDocument; AParent : TDOMElement); virtual;
+   Public
+-    Procedure LoadOptionsFromFile(AProject : TFPDocProject; Const AFileName : String);
++    Procedure LoadOptionsFromFile(AProject : TFPDocProject; Const AFileName : String; Macros : TStrings = Nil);
+     Procedure LoadFromXML(AProject : TFPDocProject; XML : TXMLDocument); virtual;
+     Procedure SaveOptionsToFile(AProject : TFPDocProject; Const AFileName : String);
+     procedure SaveToXML(AProject : TFPDocProject; ADoc: TXMLDocument); virtual;
+@@ -65,7 +66,7 @@
+ end;
+ 
+ 
+-procedure TXMLFPDocOptions.Error(Const Msg: String);
++procedure TXMLFPDocOptions.Error(const Msg: String);
+ begin
+   Raise EXMLFPDoc.Create(Msg);
+ end;
+@@ -248,7 +249,8 @@
+     end;
+ end;
+ 
+-Procedure TXMLFPDocOptions.SaveEngineOptions(Options : TEngineOptions; XML : TXMLDocument; AParent : TDOMElement);
++procedure TXMLFPDocOptions.SaveEngineOptions(Options: TEngineOptions;
++  XML: TXMLDocument; AParent: TDOMElement);
+ 
+   procedure AddStr(const n, v: string);
+   var
+@@ -288,7 +290,8 @@
+ end;
+ 
+ 
+-Procedure TXMLFPDocOptions.SaveInputFile(Const AInputFile : String; XML : TXMLDocument; AParent: TDOMElement);
++procedure TXMLFPDocOptions.SaveInputFile(const AInputFile: String;
++  XML: TXMLDocument; AParent: TDOMElement);
+ 
+ Var
+   F,O : String;
+@@ -299,7 +302,8 @@
+   AParent['options']:=O;
+ end;
+ 
+-Procedure TXMLFPDocOptions.SaveDescription(Const ADescription : String; XML : TXMLDocument; AParent: TDOMElement);
++procedure TXMLFPDocOptions.SaveDescription(const ADescription: String;
++  XML: TXMLDocument; AParent: TDOMElement);
+ 
+ begin
+   AParent['file']:=ADescription;
+@@ -317,7 +321,8 @@
+   AParent['prefix']:=Copy(AImportFile,i+1,Length(AImportFile));
+ end;
+ 
+-Procedure TXMLFPDocOptions.SavePackage(APackage: TFPDocPackage; XML : TXMLDocument; AParent: TDOMElement);
++procedure TXMLFPDocOptions.SavePackage(APackage: TFPDocPackage;
++  XML: TXMLDocument; AParent: TDOMElement);
+ 
+ 
+ var
+@@ -358,17 +363,55 @@
+ end;
+ 
+ 
++Function TXMLFPDocOptions.PreprocessFile(const AFileName: String; Macros : TStrings) : TStream;
+ 
+-procedure TXMLFPDocOptions.LoadOptionsFromFile(AProject: TFPDocProject; const AFileName: String);
++Var
++  F : TFileStream;
++  P : TTemplateParser;
++  I : Integer;
++  N,V : String;
+ 
++begin
++  Result:=Nil;
++  P:=Nil;
++  F:=TFileStream.Create(AFileName,fmOpenRead or fmShareDenyWrite);
++  try
++    P:=TTemplateParser.Create;
++    P.AllowTagParams:=False;
++    P.StartDelimiter:='{{';
++    P.EndDelimiter:='}}';
++    For I:=0 to Macros.Count-1 do
++      begin
++      Macros.GetNameValue(I,N,V);
++      P.Values[N]:=V;
++      end;
++    Result:=TMemoryStream.Create;
++    P.ParseStream(F,Result);
++    Result.Position:=0;
++  finally
++    FreeAndNil(F);
++    FreeAndNil(P);
++  end;
++end;
++
++procedure TXMLFPDocOptions.LoadOptionsFromFile(AProject: TFPDocProject;
++  const AFileName: String; Macros: TStrings = Nil);
++
+ Var
+   XML : TXMLDocument;
++  S : TStream;
+ 
+ begin
+-  ReadXMLFile(XML,AFileName);
++  XML:=Nil;
++  if Macros=Nil then
++    S:=TFileStream.Create(AFileName,fmOpenRead or fmShareDenyWrite)
++  else
++    S:=PreProcessFile(AFileName,Macros);
+   try
++    ReadXMLFile(XML,S);
+     LoadFromXML(AProject,XML);
+   finally
++    FreeAndNil(S);
+     FreeAndNil(XML);
+   end;
+ end;
+@@ -393,7 +436,8 @@
+     LoadEngineOptions(AProject.Options,N as TDOMElement);
+ end;
+ 
+-Procedure TXMLFPDocOptions.SaveOptionsToFile(AProject: TFPDocProject; const AFileName: String);
++procedure TXMLFPDocOptions.SaveOptionsToFile(AProject: TFPDocProject;
++  const AFileName: String);
+ 
+ Var
+   XML : TXMLDocument;

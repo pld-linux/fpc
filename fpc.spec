@@ -24,6 +24,7 @@ Patch2:		%{name}-gdb.patch
 Patch3:		fpc-r32374.patch
 Patch4:		fpcdocs-r1260.patch
 Patch5:		fpc-man.patch
+Patch6:		fpc-r34749.patch
 URL:		http://www.freepascal.org/
 BuildRequires:	binutils-devel >= 3:2.17.50
 BuildRequires:	gpm-devel
@@ -135,8 +136,9 @@ Dokumentacja do fpc w formacie PDF.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p0
-#%patch4 -p0
+%patch4 -p0
 %patch5 -p1
+%patch6 -p0
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
@@ -208,6 +210,7 @@ PP=`pwd`/bin/lib/%{name}/%{_bver}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/bin/%{_barch}-linux/fpdoc
 DATA2INC=`pwd`/fpcsrc/utils/bin/%{_barch}-linux/data2inc
+FPCSRCDIR=`pwd`/fpcsrc
 
 # DO NOT PUT $RPM_OPT_FLAGS IN OPT, IT DOES NOT WORK - baggins
 case "%{_build_cpu}" in
@@ -251,6 +254,7 @@ export save_size=10000
 %{__make} -j1 -C fpcdocs \
 	FPDOC=$NEWFPDOC \
 	FPC="$NEWPP" \
+	FPCSRCDIR="$FPCSRCDIR" \
 	pdf
 %endif
 
