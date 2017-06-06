@@ -1,9 +1,21 @@
 --- fpcbuild-2.6.4/fpcsrc/packages/gdbint/src/gdbint.pp~	2016-04-01 17:53:51.000000000 +0900
 +++ fpcbuild-2.6.4/fpcsrc/packages/gdbint/src/gdbint.pp	2016-04-01 23:08:14.978738263 +0900
-@@ -59,6 +59,28 @@
+@@ -59,6 +59,40 @@
  
  {$undef GDB_VERSION_RECOGNIZED}
  
++{ 8.0 }
++{$ifdef GDB_V800}
++  {$info using gdb 8.0.x}
++  {$define GDB_VERSION_RECOGNIZED}
++  {$define GDB_VER_GE_800}
++  {$LINKLIB stdc++}
++{$endif}
++
++{$ifdef GDB_VER_GE_800}
++  {$define GDB_VER_GE_711}
++{$endif}
++
 +{ 7.11.x }
 +{$ifdef GDB_V711}
 +  {$info using gdb 7.11.x}

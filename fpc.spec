@@ -1,6 +1,7 @@
 #
 # Conditional build:
 %bcond_without	ide	# FPC IDE
+%bcond_with	gdb	# GDB support in FPC IDE
 %bcond_without	doc	# documentation
 
 Summary:	Free Pascal - 32-bit Pascal compiler
@@ -33,7 +34,7 @@ BuildRequires:	rpmbuild(macros) >= 1.213
 %if %{with ide}
 BuildRequires:	babeltrace-devel
 BuildRequires:	expat-devel
-BuildRequires:	gdb-lib >= 7.2-7
+%{?with_gdb:BuildRequires:	gdb-lib >= 7.2-7}
 BuildRequires:	guile-devel
 BuildRequires:	python-devel
 BuildRequires:	readline-devel
@@ -234,7 +235,8 @@ esac
 	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
-	GDBLIBDIR=%{_libdir} \
+	%{?with_gdb:GDBLIBDIR=%{_libdir}} \
+	%{!?with_gdb:NOGDB=YES} \
 	DATA2INC="$DATA2INC" \
 	PP="$NEWPP" \
 	FPC="$NEWPP" \
