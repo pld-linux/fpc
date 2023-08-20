@@ -9,7 +9,7 @@ Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
 Version:	3.2.2
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
@@ -20,6 +20,8 @@ Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%
 # Source2-md5:	0186779de0c9caee073fc1394afbee56
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
+Patch2:		glibc-2.34.patch
+Patch3:		dwarf-debug.patch
 Patch4:		fpcdocs-r1260.patch
 Patch5:		fpc-man.patch
 URL:		http://www.freepascal.org/
@@ -135,6 +137,10 @@ Dokumentacja do fpc w formacie PDF.
 %setup -q -n %{name}build-%{version}
 %patch0 -p1
 %patch1 -p1
+cd fpcsrc
+%patch2 -p1
+%patch3 -p0
+cd ..
 %patch4 -p0
 %patch5 -p1
 

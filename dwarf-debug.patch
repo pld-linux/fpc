@@ -1,0 +1,101 @@
+--- compiler/systems/i_linux.pas	2020-01-26 11:13:16.348466579 +0100
++++ compiler/systems/i_linux.pas	2020-01-26 11:29:40.397595384 +0100
+@@ -73,7 +73,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_little;
+             alignment    :
+@@ -139,7 +139,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_little;
+             alignment    :
+@@ -205,7 +205,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_big;
+             alignment    :
+@@ -270,7 +270,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_big;
+             alignment    :
+@@ -466,7 +466,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_big;
+             alignment    :
+@@ -600,7 +600,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_little;
+             alignment    :
+@@ -667,7 +667,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_little;
+             alignment    :
+@@ -734,7 +734,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_big;
+             alignment    :
+@@ -799,7 +799,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_little;
+             alignment    :
+@@ -937,7 +937,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_big;
+             alignment    :
+@@ -1004,7 +1004,7 @@
+             linkextern   : ld_linux;
+             ar           : ar_gnu_ar;
+             res          : res_elf;
+-            dbg          : dbg_stabs;
++            dbg          : dbg_dwarf2;
+             script       : script_unix;
+             endian       : endian_little;
+             alignment    :
