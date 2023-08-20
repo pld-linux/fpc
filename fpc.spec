@@ -1,6 +1,5 @@
 #
 # Conditional build:
-%bcond_without	ide	# FPC IDE
 %bcond_with	gdb	# GDB support in FPC IDE
 %bcond_without	doc	# documentation
 
@@ -9,44 +8,45 @@ Summary(pl.UTF-8):	Free Pascal - 32-bitowy kompilator języka Pascal
 Summary(ru.UTF-8):	Свободный компилятор Pascal
 Summary(uk.UTF-8):	Вільний компілятор Pascal
 Name:		fpc
-Version:	3.0.2
+Version:	3.2.2
 Release:	1
 License:	GPL v2+
 Group:		Development/Languages
 Source0:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/source/%{name}build-%{version}.tar.gz
-# Source0-md5:	c0fc1662dbe45c1e3f66ed780a443849
+# Source0-md5:	3681ae4a208be4f64ec65e832a9a702d
 Source1:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/i386-linux/%{name}-%{version}.i386-linux.tar
-# Source1-md5:	a58c3a2d7f8625d434abe9518e4ca38c
+# Source1-md5:	18354e51309a34b0efe7702633568a1e
 Source2:	ftp://ftp.freepascal.org/pub/fpc/dist/%{version}/x86_64-linux/%{name}-%{version}.x86_64-linux.tar
-# Source2-md5:	e5721c1843cff301c5b46abfee17c890
+# Source2-md5:	0186779de0c9caee073fc1394afbee56
 Patch0:		%{name}-skip-dev-dot.patch
 Patch1:		%{name}-link.patch
-Patch2:		%{name}-gdb.patch
-Patch3:		fpc-r32374.patch
 Patch4:		fpcdocs-r1260.patch
 Patch5:		fpc-man.patch
-Patch6:		fpc-r34749.patch
 URL:		http://www.freepascal.org/
-BuildRequires:	binutils-devel >= 3:2.17.50
-BuildRequires:	gpm-devel
-BuildRequires:	ncurses-devel
-BuildRequires:	rpmbuild(macros) >= 1.213
-%if %{with ide}
 BuildRequires:	babeltrace-devel
+BuildRequires:	binutils-devel >= 3:2.17.50
 BuildRequires:	expat-devel
-%{?with_gdb:BuildRequires:	gdb-lib >= 7.2-7}
+BuildRequires:	gpm-devel
 BuildRequires:	guile-devel
-BuildRequires:	python-devel
-BuildRequires:	readline-devel
 BuildRequires:	libselinux-devel
+BuildRequires:	ncurses-devel
+BuildRequires:	readline-devel
+BuildRequires:	rpmbuild(macros) >= 1.213
 BuildRequires:	xz-devel
 BuildRequires:	zlib-devel
+%if %{with gdb}
+BuildRequires:	gdb-lib >= 7.2-7}
+BuildRequires:	python-devel
 %endif
 %if %{with doc}
 BuildRequires:	tetex-fonts-jknappen
 BuildRequires:	tetex-format-pdflatex
+BuildRequires:	tetex-latex-imakeidx
 BuildRequires:	tetex-makeindex
 BuildRequires:	tetex-metafont
+BuildRequires:	texlive-latex-enumitem
+BuildRequires:	texlive-latex-ucs
+BuildRequires:	texlive-tex-xkeyval
 BuildRequires:	texlive-xetex
 %endif
 Requires:	binutils
@@ -56,6 +56,8 @@ ExclusiveArch:	%{ix86} %{x8664}
 # %{arm} ftp://ftp.freepascal.org/pub/fpc/dist/3.0.0/arm-linux/fpc-3.0.0.arm-linux-raspberry1wq.tar
 # ppc64 ftp://ftp.freepascal.org/pub/fpc/dist/3.0.0/powerpc64-linux/fpc-3.0.0.powerpc64-linux.tar
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_debugsource_packages	0
 
 %description
 Free Pascal is a 32-bit Pascal compiler. Free Pascal is designed to
@@ -135,11 +137,8 @@ Dokumentacja do fpc w formacie PDF.
 %setup -q -n %{name}build-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p0
 %patch4 -p0
 %patch5 -p1
-%patch6 -p0
 
 %ifarch %{ix86}
 tar xf %{SOURCE1}
@@ -195,11 +194,20 @@ find fpcsrc -name Makefile -o -name fpcmake.ini -o -name fpmkunit.pp | \
 # save for fpc-src
 install -d fpc-src
 cp -af fpcsrc/* fpc-src
-rm -r fpc-src/{ide,tests}
+rm -r fpc-src/tests
 
 %if 0%{?debug:1}
 find fpcsrc -name Makefile | xargs %{__sed} -i -e 's/-Xs//'
 %endif
+
+%{__sed} -E -i -e '1s,#!\s*/usr/bin/env\s+bash(\s|$),#!/bin/bash\1,' \
+      fpc-src/packages/fpmkunit/examples/ppu2fpmake.sh \
+      fpc-src/packages/gdbint/gen-gdblib-inc.sh \
+      fpc-src/packages/gtk2/src/gtk2x11/scripts/gdkx11_h2pas.sh \
+      fpc-src/rtl/unix/scripts/check_consts.sh \
+      fpc-src/rtl/unix/scripts/check_errno.sh \
+      fpc-src/rtl/unix/scripts/check_errnostr.sh \
+      fpc-src/rtl/unix/scripts/check_sys.sh
 
 %build
 # use ld.bfd
@@ -246,10 +254,11 @@ esac
 	rtl_clean \
 	packages_clean \
 	utils_clean \
-	%{?with_ide: ide_clean installer_clean} \
+	installer_clean \
 	rtl_all \
 	packages_all \
-	utils_all %{?with_ide:ide_all installer_all}
+	utils_all \
+	installer_all
 
 %if %{with doc}
 export save_size=10000
@@ -272,7 +281,6 @@ FPCMAKE=`pwd`/fpcsrc/utils/fpcm/bin/%{_barch}-linux/fpcmake
 	compiler_distinstall \
 	rtl_distinstall \
 	packages_distinstall \
-	%{?with_ide:ide_distinstall} \
 	utils_distinstall \
 	PP="$NEWPP" \
 	FPCMAKE="$FPCMAKE" \
@@ -330,6 +338,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/chmcmd
 %attr(755,root,root) %{_bindir}/chmls
 %attr(755,root,root) %{_bindir}/cldrparser
+%attr(755,root,root) %{_bindir}/compileserver
 %attr(755,root,root) %{_bindir}/data2inc
 %attr(755,root,root) %{_bindir}/delp
 %attr(755,root,root) %{_bindir}/fd2pascal
@@ -341,12 +350,15 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/h2pas
 %attr(755,root,root) %{_bindir}/h2paspp
 %attr(755,root,root) %{_bindir}/instantfpc
+%attr(755,root,root) %{_bindir}/json2pas
 %attr(755,root,root) %{_bindir}/makeskel
+%attr(755,root,root) %{_bindir}/mka64ins
 %attr(755,root,root) %{_bindir}/mkarmins
 %attr(755,root,root) %{_bindir}/mkinsadd
 %attr(755,root,root) %{_bindir}/mkx86ins
 %attr(755,root,root) %{_bindir}/pas2fpm
 %attr(755,root,root) %{_bindir}/pas2jni
+%attr(755,root,root) %{_bindir}/pas2js
 %attr(755,root,root) %{_bindir}/pas2ut
 %attr(755,root,root) %{_bindir}/plex
 %attr(755,root,root) %{_bindir}/postw32
@@ -361,10 +373,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/rstconv
 %attr(755,root,root) %{_bindir}/unihelper
 %attr(755,root,root) %{_bindir}/unitdiff
+%attr(755,root,root) %{_bindir}/webidl2pas
 # TODO: move the below files to data dir
 # - JSON resources(?)
 %{_bindir}/makeskel.rsj
 %{_bindir}/ptop.rsj
+%{_bindir}/pas2ut.rsj
+%{_bindir}/rstconv.rsj
+%{_bindir}/unitdiff.rsj
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fpc.cfg
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/fppkg.cfg
 %dir %{_sysconfdir}/fppkg
@@ -379,6 +395,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ld
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
+%attr(755,root,root) %{_libdir}/libpas2jslib.so
 %{_mandir}/man1/bin2obj.1*
 %{_mandir}/man1/chmcmd.1*
 %{_mandir}/man1/chmls.1*
@@ -417,13 +434,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/fpcmake.5*
 %{_mandir}/man5/ptop.cfg.5*
 
-%if %{with ide}
 %files ide
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/fp
 # TODO: move the below files to data dir
 # - ANSI art file used by fp binary
 %{_bindir}/fp.ans
+%{_bindir}/fp.rsj
 # - IDE command templates
 %{_bindir}/cvsco.tdf
 %{_bindir}/cvsdiff.tdf
@@ -436,7 +453,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/program.pt
 %{_bindir}/unit.pt
 %{_libdir}/%{name}/%{version}/ide
-%endif
 
 %files src
 %defattr(644,root,root,755)
