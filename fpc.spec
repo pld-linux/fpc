@@ -57,8 +57,6 @@ ExclusiveArch:	%{ix86} %{x8664}
 # ppc64 ftp://ftp.freepascal.org/pub/fpc/dist/3.0.0/powerpc64-linux/fpc-3.0.0.powerpc64-linux.tar
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_debugsource_packages	0
-
 %description
 Free Pascal is a 32-bit Pascal compiler. Free Pascal is designed to
 be, as much as possible, source compatible with Turbo Pascal 7.0 and
@@ -210,11 +208,6 @@ find fpcsrc -name Makefile | xargs %{__sed} -i -e 's/-Xs//'
       fpc-src/rtl/unix/scripts/check_sys.sh
 
 %build
-# use ld.bfd
-[ -d our-ld ] || install -d our-ld
-ln -sf %{_bindir}/ld.bfd our-ld/ld
-export PATH=$(pwd)/our-ld:$PATH
-
 PP=`pwd`/bin/lib/%{name}/%{_bver}/ppc%{_bname}
 NEWPP=`pwd`/fpcsrc/compiler/ppc%{_bname}
 NEWFPDOC=`pwd`/fpcsrc/utils/fpdoc/bin/%{_barch}-linux/fpdoc
@@ -230,7 +223,7 @@ case "%{_build_cpu}" in
 esac
 
 %{__make} -C fpcsrc compiler_cycle \
-	OPT="$OPTF %{!?debug:-Xs} -n" \
+	OPT="$OPTF -k--build-id -gl -gw %{!?debug:-Xs} -n" \
 	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
@@ -239,7 +232,8 @@ esac
 	FPC="$PP" \
 	LINKSMART=YES
 
-%{__make} -C fpcsrc OPT="$OPTF %{!?debug:-Xs} -n" \
+%{__make} -C fpcsrc \
+	OPT="$OPTF -k--build-id -gl -gw %{!?debug:-Xs} -n" \
 	RELEASE="1" \
 	BASEINSTALLDIR=%{_libdir}/%{name}/%{version} \
 	BININSTALLDIR=%{_bindir} \
@@ -300,8 +294,6 @@ FPCMAKE=`pwd`/fpcsrc/utils/fpcm/bin/%{_barch}-linux/fpcmake
 	INSTALL_MANDIR=$RPM_BUILD_ROOT%{_mandir}
 
 ln -sf ../%{_lib}/%{name}/%{version}/ppc%{_bname} $RPM_BUILD_ROOT%{_bindir}
-
-ln -sf %{_bindir}/ld.bfd $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version}/ld
 
 sh fpc-src/compiler/utils/samplecfg $RPM_BUILD_ROOT%{_libdir}/%{name}/%{version} $RPM_BUILD_ROOT%{_sysconfdir}
 %{__sed} -i -e "s,$RPM_BUILD_ROOT,,g" $RPM_BUILD_ROOT%{_sysconfdir}/{*.cfg,fppkg/default}
@@ -392,7 +384,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/%{version}/units
 %{_libdir}/%{name}/%{version}/fpmkinst
 %{_libdir}/%{name}/lexyacc/*
-%attr(755,root,root) %{_libdir}/%{name}/%{version}/ld
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/ppc%{_bname}
 %attr(755,root,root) %{_libdir}/%{name}/%{version}/samplecfg
 %attr(755,root,root) %{_libdir}/libpas2jslib.so
